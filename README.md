@@ -4,30 +4,6 @@
 
 **Mission:** Build SlideTheory to $1K MRR and beyond.
 
-## 📁 Repository Structure
-
-```
-slidetheory/
-├── apps/
-│   ├── web/              # Next.js 14 app (main application)
-│   └── landing/          # Static site for slidetheory.io (VPS)
-├── infrastructure/       # Deployment & infrastructure
-│   ├── nginx/            # Nginx configuration
-│   ├── deployment/       # Deploy scripts, PM2 config
-│   └── vercel/           # Vercel-specific configs
-├── packages/
-│   ├── api/              # Shared API types/routes
-│   └── ui/               # Shared UI components (future)
-├── docs/                 # Documentation
-│   ├── specs/            # Product specs, PRDs
-│   ├── guides/           # Runbooks, how-tos
-│   └── decisions/        # Architecture Decision Records
-├── resources/            # Non-code resources
-│   ├── reference-decks/  # McKinsey/BCG PDFs for RAG
-│   └── marketing/        # Copy, campaigns, assets
-└── supabase/             # Database schema, migrations, edge functions
-```
-
 ## 🚀 Quick Start
 
 ### Web App (Next.js)
@@ -40,23 +16,56 @@ npm run dev
 ### Landing Site
 ```bash
 cd apps/landing
-# Static files - serve with any web server
-# For local: npx serve .
+npm install  # if needed
+npm run dev  # or npx serve .
 ```
 
-## 🏗️ Deployment
+## 🏗️ Deployment (Vercel)
 
-- **Landing (slidetheory.io):** VPS via PM2 + Nginx
-- **Web App:** Vercel (frontend-rose-chi-52.vercel.app/app)
+Both apps deploy automatically from GitHub:
 
-See `infrastructure/deployment/` for detailed guides.
+| App | Domain | Vercel Project |
+|-----|--------|----------------|
+| **Landing** | slidetheory.io | Import `apps/landing` |
+| **Web App** | app.slidetheory.io | Import `apps/web` |
+
+### Setup
+
+1. **Connect GitHub to Vercel:**
+   - Go to [vercel.com](https://vercel.com)
+   - Import `blakehenkel24-eng/slidetheory`
+   - Set **Root Directory** to `apps/web` for main app
+   - Repeat for `apps/landing`
+
+2. **Environment Variables:**
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=
+   SUPABASE_SERVICE_ROLE_KEY=
+   KIMI_API_KEY=
+   KIMI_BASE_URL=https://api.moonshot.cn/v1
+   ```
+
+3. **Domains:**
+   - Add `slidetheory.io` → landing project
+   - Add `app.slidetheory.io` → web project
+
+## 📁 Repository Structure
+
+```
+slidetheory/
+├── apps/
+│   ├── web/              # Next.js 14 app (app.slidetheory.io)
+│   └── landing/          # Static site (slidetheory.io)
+├── docs/                 # Documentation
+├── infrastructure/       # Deployment configs
+├── resources/            # Reference decks, marketing
+└── supabase/             # Edge functions
+```
 
 ## 📊 Current Status
 
-- ✅ Sprint 1: Auth, UI scaffold, basic slide generation
-- 🔄 Sprint 2: RAG integration with reference decks
-- 📋 Next: User testing, Stripe integration
+- ✅ Sprint 1: Auth, UI scaffold
+- 🔄 Sprint 2: RAG integration
+- 📋 Next: User testing, Stripe
 
----
-
-*Built with Next.js, Supabase, Kimi API, and relentless resourcefulness.*
