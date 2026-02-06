@@ -1,5 +1,4 @@
-// Supabase Edge Function: API proxy for slide generation
-// Uses OpenAI API
+// Supabase Edge Function: Generate images using OpenAI DALL-E
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
@@ -15,7 +14,7 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt, slideType, audience, model = 'gpt-4' } = await req.json();
+    const { prompt, size = '1024x1024', quality = 'standard' } = await req.json();
     
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 
@@ -23,26 +22,18 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY not configured');
     }
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: model,
-        messages: [
-          {
-            role: 'system',
-            content: `You are an expert strategy consultant with 20 years of experience at McKinsey, Bain, and BCG. 
-Create ${slideType} slides for ${audience} audience.
-Use proven frameworks: MECE structure, pyramid principle, and action-oriented titles.
-Format output as clean HTML or structured text suitable for slide rendering.`
-          },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 4000,
+        model: 'dall-e-3',
+        prompt: prompt,
+        size: size,
+        quality: quality,
+        n: 1,
       })
     });
 
@@ -55,9 +46,8 @@ Format output as clean HTML or structured text suitable for slide rendering.`
     
     return new Response(
       JSON.stringify({
-        content: data.choices?.[0]?.message?.content,
-        jobId: crypto.randomUUID(),
-        model: model,
+        url: data.data?.[0]?.url,
+        revised_prompt: data.data?.[0]?.revised_prompt,
       }),
       {
         headers: {
