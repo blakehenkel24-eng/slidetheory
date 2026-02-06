@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy - SlideTheory</title>
+  <meta name="description" content="SlideTheory's Privacy Policy - Learn how we collect, use, and protect your data.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Navigation Styles */
+    .nav-header {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: #0f172a;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      font-size: 20px;
+      font-weight: 600;
+      color: #fff;
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .nav-logo:hover {
+      opacity: 0.9;
+    }
+
+    .nav-logo-accent {
+      color: #3b82f6;
+      font-weight: 700;
+    }
+
+    .nav-logo .version-badge {
+      margin-left: 8px;
+      font-size: 11px;
+      padding: 2px 8px;
+      background: rgba(59, 130, 246, 0.2);
+      color: #3b82f6;
+      border-radius: 4px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #94a3b8;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .nav-link.active {
+      color: #fff;
+      background: rgba(59, 130, 246, 0.15);
+    }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 8px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+
+    .mobile-menu-toggle span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: #fff;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-menu-toggle.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .mobile-menu-toggle.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .mobile-menu-toggle.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    @media (max-width: 768px) {
+      .mobile-menu-toggle {
+        display: flex;
+      }
+
+      .nav-links {
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        flex-direction: column;
+        background: #0f172a;
+        padding: 24px;
+        gap: 8px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        align-items: stretch;
+      }
+
+      .nav-links.open {
+        transform: translateX(0);
+      }
+
+      .nav-link {
+        padding: 16px;
+        font-size: 16px;
+        justify-content: center;
+      }
+
+      .nav-cta .btn-cta {
+        display: none;
+      }
+
+      .nav-cta-mobile {
+        display: block;
+        margin-top: 16px;
+        text-align: center;
+      }
+
+      .nav-cta-mobile .btn-cta {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .nav-cta-mobile {
+        display: none;
+      }
+    }
+
+    .page-app {
+      background: #0f172a;
+      min-height: 100vh;
+    }
+
+    /* Legal Page Specific Styles */
+    .legal-main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .legal-header {
+      text-align: center;
+      margin-bottom: 48px;
+      padding: 40px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .legal-title {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .legal-subtitle {
+      font-size: 16px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+
+    .legal-last-updated {
+      font-size: 14px;
+      color: #94a3b8;
+      font-style: italic;
+    }
+
+    .legal-content {
+      color: #cbd5e1;
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .legal-content h2 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #fff;
+      margin: 48px 0 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .legal-content h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+      margin: 32px 0 16px;
+    }
+
+    .legal-content h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin: 24px 0 12px;
+    }
+
+    .legal-content p {
+      margin-bottom: 16px;
+    }
+
+    .legal-content ul, .legal-content ol {
+      margin: 0 0 20px;
+      padding-left: 28px;
+    }
+
+    .legal-content li {
+      margin-bottom: 10px;
+    }
+
+    .legal-content strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .legal-content a {
+      color: #3b82f6;
+      text-decoration: none;
+    }
+
+    .legal-content a:hover {
+      text-decoration: underline;
+    }
+
+    .legal-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      font-size: 14px;
+    }
+
+    .legal-content th {
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      font-weight: 600;
+      text-align: left;
+      padding: 12px 16px;
+      border-bottom: 2px solid rgba(255,255,255,0.1);
+    }
+
+    .legal-content td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      vertical-align: top;
+    }
+
+    .legal-content tr:hover {
+      background: rgba(255,255,255,0.02);
+    }
+
+    .legal-content blockquote {
+      border-left: 3px solid #3b82f6;
+      padding-left: 20px;
+      margin: 24px 0;
+      color: #94a3b8;
+      font-style: italic;
+    }
+
+    .legal-section {
+      margin-bottom: 40px;
+    }
+
+    .contact-box {
+      background: rgba(37, 99, 235, 0.1);
+      border: 1px solid rgba(37, 99, 235, 0.2);
+      border-radius: 12px;
+      padding: 24px;
+      margin: 24px 0;
+    }
+
+    .contact-box h3 {
+      margin-top: 0;
+      color: #60a5fa;
+    }
+
+    .back-to-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 48px;
+      padding: 12px 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: #94a3b8;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .back-to-top:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    @media (max-width: 768px) {
+      .legal-title {
+        font-size: 32px;
+      }
+
+      .legal-content h2 {
+        font-size: 20px;
+      }
+
+      .legal-content table {
+        font-size: 12px;
+      }
+
+      .legal-content th,
+      .legal-content td {
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  
+  <div class="page-app">
+    <!-- Header -->
+    <header class="nav-header">
+      <div class="nav-left">
+        <a href="index.html" class="nav-logo">
+          Slide<span class="nav-logo-accent">Theory</span>
+          <span class="version-badge">v2.0</span>
+        </a>
+        <nav>
+          <ul class="nav-links" id="navLinks">
+            <li><a href="index.html" class="nav-link">Home</a></li>
+            <li><a href="how-it-works.html" class="nav-link">How it Works</a></li>
+            <li><a href="resources.html" class="nav-link">Resources</a></li>
+            <li><a href="blog.html" class="nav-link">Blog</a></li>
+            <li class="nav-cta-mobile"><a href="index.html" class="btn-cta">Get Started</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="nav-cta">
+        <a href="index.html" class="btn-cta">Get Started</a>
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="legal-main" id="main-content">
+      <header class="legal-header">
+        <h1 class="legal-title">Privacy Policy</h1>
+        <p class="legal-subtitle">Your privacy is important to us</p>
+        <p class="legal-last-updated">Last Updated: February 5, 2026 | Effective Date: February 5, 2026</p>
+      </header>
+
+      <article class="legal-content">
+        <section class="legal-section">
+          <h2>1. Introduction</h2>
+          <p>SlideTheory ("we," "us," "our," or "SlideTheory") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI-powered presentation slide generation platform and related services (collectively, the "Services").</p>
+          <p>This Privacy Policy complies with:</p>
+          <ul>
+            <li>General Data Protection Regulation (GDPR) - European Union</li>
+            <li>California Consumer Privacy Act (CCPA) / California Privacy Rights Act (CPRA)</li>
+            <li>Other applicable privacy laws</li>
+          </ul>
+        </section>
+
+        <section class="legal-section">
+          <h2>2. Information We Collect</h2>
+          
+          <h3>2.1 Information You Provide Directly</h3>
+          
+          <h4>Account Information:</h4>
+          <ul>
+            <li>Name and email address</li>
+            <li>Password (encrypted)</li>
+            <li>Company/organization name (optional)</li>
+            <li>Job title (optional)</li>
+            <li>Profile picture (optional)</li>
+          </ul>
+
+          <h4>Payment Information:</h4>
+          <ul>
+            <li>Credit card details (processed by Stripe - we do not store full card numbers)</li>
+            <li>Billing address</li>
+            <li>Transaction history</li>
+          </ul>
+
+          <h4>User Content:</h4>
+          <ul>
+            <li>Text inputs provided for slide generation</li>
+            <li>Uploaded files (CSV, TXT)</li>
+            <li>Generated slides and presentations</li>
+            <li>Templates and customizations</li>
+          </ul>
+
+          <h4>Communications:</h4>
+          <ul>
+            <li>Support requests and correspondence</li>
+            <li>Survey responses</li>
+            <li>Feedback and suggestions</li>
+          </ul>
+
+          <h3>2.2 Information Collected Automatically</h3>
+
+          <h4>Usage Data:</h4>
+          <ul>
+            <li>IP address and device information</li>
+            <li>Browser type and version</li>
+            <li>Operating system</li>
+            <li>Referring website</li>
+            <li>Pages visited and features used</li>
+            <li>Time spent on platform</li>
+            <li>Click patterns and interactions</li>
+          </ul>
+
+          <h4>AI Processing Data:</h4>
+          <ul>
+            <li>Prompts submitted for slide generation</li>
+            <li>Generated outputs</li>
+            <li>Selection and modification history</li>
+            <li>Error logs and performance metrics</li>
+          </ul>
+
+          <h4>Cookies and Similar Technologies:</h4>
+          <ul>
+            <li>Session cookies (essential functionality)</li>
+            <li>Preference cookies (settings and customization)</li>
+            <li>Analytics cookies (usage patterns)</li>
+            <li>Advertising cookies (limited, opt-in only)</li>
+          </ul>
+
+          <h3>2.3 Information from Third Parties</h3>
+          <ul>
+            <li>Authentication providers (if using social login)</li>
+            <li>Payment processors (transaction confirmations)</li>
+            <li>Analytics providers (aggregated usage data)</li>
+          </ul>
+        </section>
+
+        <section class="legal-section">
+          <h2>3. How We Use Your Information</h2>
+
+          <h3>3.1 Primary Purposes</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Purpose</th>
+                <th>Legal Basis (GDPR)</th>
+                <th>Data Used</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Provide Services</td>
+                <td>Contract performance</td>
+                <td>Account info, User Content, Usage data</td>
+              </tr>
+              <tr>
+                <td>Process payments</td>
+                <td>Contract performance</td>
+                <td>Payment info, Billing address</td>
+              </tr>
+              <tr>
+                <td>Improve AI models</td>
+                <td>Legitimate interest</td>
+                <td>Anonymized prompts and outputs</td>
+              </tr>
+              <tr>
+                <td>Customer support</td>
+                <td>Contract performance</td>
+                <td>Account info, Communications</td>
+              </tr>
+              <tr>
+                <td>Security and fraud prevention</td>
+                <td>Legal obligation/Legitimate interest</td>
+                <td>IP address, Usage patterns</td>
+              </tr>
+              <tr>
+                <td>Marketing (with consent)</td>
+                <td>Consent</td>
+                <td>Email address, Usage preferences</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>3.2 Specific Uses</h3>
+
+          <h4>Service Provision:</h4>
+          <ul>
+            <li>Authenticate users and manage accounts</li>
+            <li>Process slide generation requests</li>
+            <li>Store and retrieve user content</li>
+            <li>Enable export functionality (PNG, PPTX, PDF)</li>
+          </ul>
+
+          <h4>AI Model Improvement:</h4>
+          <ul>
+            <li>Train and fine-tune our AI systems</li>
+            <li>Analyze usage patterns for quality improvement</li>
+            <li>Develop new features and capabilities</li>
+          </ul>
+
+          <h4>Analytics and Research:</h4>
+          <ul>
+            <li>Understand how users interact with our platform</li>
+            <li>Measure feature usage and effectiveness</li>
+            <li>Conduct research to improve user experience</li>
+          </ul>
+
+          <h4>Marketing (with explicit consent):</h4>
+          <ul>
+            <li>Send product updates and newsletters</li>
+            <li>Share tips and best practices</li>
+            <li>Notify about new features</li>
+          </ul>
+        </section>
+
+        <section class="legal-section">
+          <h2>4. Legal Basis for Processing (GDPR)</h2>
+          <p>We process personal data based on the following legal grounds:</p>
+          <ol>
+            <li><strong>Performance of Contract:</strong> Processing necessary to provide the Services you requested</li>
+            <li><strong>Legitimate Interests:</strong> Improving our Services, ensuring security, preventing fraud</li>
+            <li><strong>Legal Obligation:</strong> Compliance with applicable laws and regulations</li>
+            <li><strong>Consent:</strong> Marketing communications and optional features</li>
+          </ol>
+        </section>
+
+        <section class="legal-section">
+          <h2>5. Data Sharing and Disclosure</h2>
+
+          <h3>5.1 Third-Party Service Providers</h3>
+          <p>We share data with trusted partners who assist in:</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Provider</th>
+                <th>Purpose</th>
+                <th>Data Shared</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Stripe</td>
+                <td>Payment processing</td>
+                <td>Payment details, billing info</td>
+              </tr>
+              <tr>
+                <td>Kimi (Moonshot AI)</td>
+                <td>AI content generation</td>
+                <td>Prompts, anonymized training data</td>
+              </tr>
+              <tr>
+                <td>Amazon Web Services</td>
+                <td>Cloud hosting</td>
+                <td>All data (encrypted)</td>
+              </tr>
+              <tr>
+                <td>Google Analytics</td>
+                <td>Usage analytics</td>
+                <td>Aggregated, anonymized usage data</td>
+              </tr>
+              <tr>
+                <td>SendGrid/Postmark</td>
+                <td>Email delivery</td>
+                <td>Email addresses</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>5.2 Legal Requirements</h3>
+          <p>We may disclose information if required by:</p>
+          <ul>
+            <li>Court order, subpoena, or legal process</li>
+            <li>Law enforcement or government request</li>
+            <li>Investigation of potential violations</li>
+            <li>Protection of rights, property, or safety</li>
+          </ul>
+
+          <h3>5.3 Business Transfers</h3>
+          <p>If SlideTheory is acquired or merged:</p>
+          <ul>
+            <li>User information may be transferred</li>
+            <li>You will be notified of any ownership change</li>
+            <li>Data protection commitments remain</li>
+          </ul>
+
+          <h3>5.4 With Your Consent</h3>
+          <p>We may share information for purposes you specifically authorize.</p>
+        </section>
+
+        <section class="legal-section">
+          <h2>6. Data Retention</h2>
+
+          <h3>6.1 Retention Periods</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Data Type</th>
+                <th>Retention Period</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Account information</td>
+                <td>Duration of account + 2 years</td>
+                <td>Legal obligations, fraud prevention</td>
+              </tr>
+              <tr>
+                <td>User Content</td>
+                <td>Duration of account + 30 days</td>
+                <td>Service provision, recovery</td>
+              </tr>
+              <tr>
+                <td>Payment records</td>
+                <td>7 years</td>
+                <td>Tax and accounting requirements</td>
+              </tr>
+              <tr>
+                <td>Usage logs</td>
+                <td>90 days</td>
+                <td>Security, debugging</td>
+              </tr>
+              <tr>
+                <td>AI training data (anonymized)</td>
+                <td>Indefinite</td>
+                <td>Model improvement</td>
+              </tr>
+              <tr>
+                <td>Marketing data</td>
+                <td>Until consent withdrawn</td>
+                <td>Marketing purposes</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>6.2 Deletion</h3>
+          <p>Upon account deletion:</p>
+          <ul>
+            <li>Personal data is marked for deletion</li>
+            <li>Backups are purged within 30 days</li>
+            <li>Anonymized data may be retained</li>
+            <li>Legal obligations may require retention of certain records</li>
+          </ul>
+        </section>
+
+        <section class="legal-section">
+          <h2>7. Your Privacy Rights</h2>
+
+          <h3>7.1 GDPR Rights (EU/EEA Users)</h3>
+          <p>You have the right to:</p>
+          <ol>
+            <li><strong>Access:</strong> Request a copy of your personal data</li>
+            <li><strong>Rectification:</strong> Correct inaccurate or incomplete data</li>
+            <li><strong>Erasure ("Right to be Forgotten"):</strong> Request deletion of your data</li>
+            <li><strong>Restriction:</strong> Limit how we process your data</li>
+            <li><strong>Data Portability:</strong> Receive data in a structured, machine-readable format</li>
+            <li><strong>Objection:</strong> Object to processing based on legitimate interests</li>
+            <li><strong>Withdraw Consent:</strong> Revoke consent at any time</li>
+            <li><strong>Automated Decision-Making:</strong> Not be subject to solely automated decisions with significant effects</li>
+          </ol>
+
+          <h3>7.2 CCPA/CPRA Rights (California Residents)</h3>
+          <p>You have the right to:</p>
+          <ol>
+            <li><strong>Know:</strong> Request disclosure of categories and specific pieces of personal information collected</li>
+            <li><strong>Delete:</strong> Request deletion of personal information</li>
+            <li><strong>Opt-Out:</strong> Opt-out of sale/sharing of personal information</li>
+            <li><strong>Non-Discrimination:</strong> Not be discriminated against for exercising privacy rights</li>
+            <li><strong>Correct:</strong> Request correction of inaccurate personal information</li>
+            <li><strong>Limit:</strong> Limit use and disclosure of sensitive personal information</li>
+          </ol>
+
+          <h3>7.3 How to Exercise Your Rights</h3>
+          <div class="contact-box">
+            <h3>Contact Information</h3>
+            <p><strong>Email:</strong> <a href="mailto:privacy@slidetheory.com">privacy@slidetheory.com</a></p>
+            <p><strong>Account Settings:</strong> Available in your profile dashboard</p>
+          </div>
+          <p>We will respond within:</p>
+          <ul>
+            <li>GDPR: 30 days (may extend to 60 with notification)</li>
+            <li>CCPA: 45 days (may extend to 90 with notification)</li>
+          </ul>
+          <p><strong>Verification:</strong> We will verify your identity before processing requests to protect your privacy.</p>
+        </section>
+
+        <section class="legal-section">
+          <h2>8. Data Security</h2>
+
+          <h3>8.1 Security Measures</h3>
+          <p>We implement appropriate technical and organizational measures:</p>
+          <ul>
+            <li><strong>Encryption:</strong> AES-256 for data at rest, TLS 1.3 for data in transit</li>
+            <li><strong>Access Controls:</strong> Role-based access, multi-factor authentication</li>
+            <li><strong>Monitoring:</strong> 24/7 security monitoring and intrusion detection</li>
+            <li><strong>Backups:</strong> Encrypted, geographically distributed backups</li>
+            <li><strong>Employee Training:</strong> Regular security awareness training</li>
+            <li><strong>Third-Party Audits:</strong> Annual security assessments</li>
+          </ul>
+
+          <h3>8.2 Data Breach Notification</h3>
+          <p>In case of a data breach:</p>
+          <ul>
+            <li>We will notify affected users within 72 hours (GDPR requirement)</li>
+            <li>We will notify relevant supervisory authorities as required</li>
+            <li>We will provide guidance on protective measures</li>
+          </ul>
+        </section>
+
+        <section class="legal-section">
+          <h2>9. International Data Transfers</h2>
+
+          <h3>9.1 Transfer Mechanisms</h3>
+          <p>SlideTheory operates globally. Your data may be transferred to:</p>
+          <ul>
+            <li>United States (primary hosting)</li>
+            <li>European Union (backup and redundancy)</li>
+          </ul>
+          <p>We ensure appropriate safeguards:</p>
+          <ul>
+            <li><strong>Standard Contractual Clauses (SCCs):</strong> For EU data transfers</li>
+            <li><strong>Adequacy Decisions:</strong> Where applicable</li>
+            <li><strong>Data Processing Agreements:</strong> With all subprocessors</li>
+          </ul>
+
+          <h3>9.2 Subprocessors</h3>
+          <p>Current subprocessors:</p>
+          <ul>
+            <li>Amazon Web Services (US, EU regions)</li>
+            <li>Stripe (US)</li>
+            <li>Moonshot AI/Kimi (China - see note below)</li>
+          </ul>
+          <p><strong>Note on Kimi/Kimi API:</strong> When using AI generation features, prompts are processed by Moonshot AI's infrastructure. For EU users, we implement additional safeguards including data minimization and prompt anonymization where possible.</p>
+        </section>
+
+        <section class="legal-section">
+          <h2>10. Children's Privacy</h2>
+          <p>SlideTheory is not intended for children under 18. We do not knowingly collect personal information from children. If we discover such data, we will delete it immediately.</p>
+        </section>
+
+        <section class="legal-section">
+          <h2>11. Cookie Policy</h2>
+          <p>We use cookies and similar technologies to enhance your experience. See our Cookie Policy for detailed information about cookies and tracking technologies.</p>
+        </section>
+
+        <section class="legal-section">
+          <h2>12. Changes to This Privacy Policy</h2>
+          <p>We may update this Privacy Policy periodically. Changes will be:</p>
+          <ul>
+            <li>Posted on this page with updated "Last Updated" date</li>
+            <li>Notified via email for material changes</li>
+            <li>Effective immediately for non-material changes</li>
+          </ul>
+        </section>
+
+        <section class="legal-section">
+          <h2>13. Contact Us</h2>
+          
+          <div class="contact-box">
+            <h3>Data Protection Officer (EU)</h3>
+            <p><strong>Email:</strong> <a href="mailto:dpo@slidetheory.com">dpo@slidetheory.com</a></p>
+          </div>
+
+          <div class="contact-box">
+            <h3>Privacy Team</h3>
+            <p><strong>Email:</strong> <a href="mailto:privacy@slidetheory.com">privacy@slidetheory.com</a></p>
+            <p><strong>Address:</strong> SlideTheory, Inc.</p>
+          </div>
+
+          <h3>Supervisory Authorities</h3>
+          <p>You have the right to lodge a complaint with your local data protection authority:</p>
+          <ul>
+            <li><strong>EU:</strong> Your national Data Protection Authority</li>
+            <li><strong>UK:</strong> Information Commissioner's Office (ICO)</li>
+            <li><strong>California:</strong> California Attorney General's Office</li>
+          </ul>
+        </section>
+
+        <section class="legal-section">
+          <h2>14. California-Specific Disclosures</h2>
+
+          <h3>14.1 Categories of Personal Information Collected</h3>
+          <p>In the past 12 months, we have collected:</p>
+          <ul>
+            <li>Identifiers (name, email, IP address)</li>
+            <li>Commercial information (purchase history)</li>
+            <li>Internet activity (browsing history, interactions)</li>
+            <li>Professional information (job title, company)</li>
+          </ul>
+
+          <h3>14.2 Categories of Personal Information Disclosed</h3>
+          <p>We may disclose to service providers:</p>
+          <ul>
+            <li>Identifiers</li>
+            <li>Commercial information</li>
+            <li>Internet activity</li>
+          </ul>
+          <p>We do not "sell" personal information as defined by CCPA.</p>
+
+          <h3>14.3 Shine the Light</h3>
+          <p>California residents may request information about disclosure of personal information to third parties for their direct marketing purposes. Contact <a href="mailto:privacy@slidetheory.com">privacy@slidetheory.com</a>.</p>
+        </section>
+
+        <p style="margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-style: italic;">
+          By using SlideTheory, you acknowledge that you have read and understood this Privacy Policy.
+        </p>
+
+        <a href="#main-content" class="back-to-top">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m18 15-6-6-6 6"/>
+          </svg>
+          Back to top
+        </a>
+      </article>
+    </main>
+  </div>
+
+  <script>
+    // Mobile menu toggle
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    mobileMenuToggle.addEventListener('click', () => {
+      mobileMenuToggle.classList.toggle('active');
+      navLinks.classList.toggle('open');
+    });
+
+    // Close mobile menu when clicking a link
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenuToggle.classList.remove('active');
+        navLinks.classList.remove('open');
+      });
+    });
+  </script>
+</body>
+</html>

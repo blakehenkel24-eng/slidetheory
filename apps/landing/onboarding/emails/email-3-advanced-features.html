@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unlock Advanced Features</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      line-height: 1.6;
+    }
+    .email-wrapper {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+    }
+    .header {
+      background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
+      padding: 40px 30px;
+      text-align: center;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .logo-accent { color: #c4b5fd; }
+    .header h1 {
+      color: #ffffff;
+      font-size: 28px;
+      margin-top: 15px;
+    }
+    .header p {
+      color: rgba(255,255,255,0.9);
+      margin-top: 10px;
+    }
+    .content { padding: 40px 30px; }
+    h3 {
+      font-size: 20px;
+      color: #1e3a5f;
+      margin-bottom: 15px;
+    }
+    .feature-grid {
+      display: grid;
+      gap: 20px;
+      margin: 25px 0;
+    }
+    .feature-item {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 25px;
+      border: 1px solid #e2e8f0;
+    }
+    .feature-item .icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+    .feature-item h4 {
+      font-size: 16px;
+      color: #1e3a5f;
+      margin-bottom: 8px;
+    }
+    .feature-item p {
+      font-size: 14px;
+      color: #64748b;
+      margin: 0;
+    }
+    .shortcut-table {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 25px;
+      margin: 25px 0;
+    }
+    .shortcut-table h4 {
+      color: #ffffff;
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
+    .shortcut-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #334155;
+    }
+    .shortcut-row:last-child { border-bottom: none; }
+    .shortcut-row span {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+    kbd {
+      background: #334155;
+      color: #ffffff;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    .cta-button {
+      display: inline-block;
+      background: #7c3aed;
+      color: #ffffff;
+      padding: 16px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      margin: 20px 0;
+    }
+    .footer {
+      background: #f1f5f9;
+      padding: 30px;
+      text-align: center;
+      font-size: 14px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-wrapper">
+    <div class="header">
+      <div class="logo">Slide<span class="logo-accent">Theory</span></div>
+      <h1>Work Like a Pro ⚡</h1>
+      <p>Advanced features to speed up your workflow</p>
+    </div>
+    
+    <div class="content">
+      <h3>Features you might have missed:</h3>
+      
+      <div class="feature-grid">
+        <div class="feature-item">
+          <div class="icon">⌨️</div>
+          <h4>Keyboard Shortcuts</h4>
+          <p>Speed up your workflow with powerful shortcuts. Generate slides without touching your mouse.</p>
+        </div>
+        
+        <div class="feature-item">
+          <div class="icon">📁</div>
+          <h4>Data File Upload</h4>
+          <p>Upload CSV or Excel files and let AI extract insights automatically.</p>
+        </div>
+        
+        <div class="feature-item">
+          <div class="icon">🎨</div>
+          <h4>Presentation Modes</h4>
+          <p>Toggle between Presentation (minimal) and Read Mode (detailed) for different audiences.</p>
+        </div>
+        
+        <div class="feature-item">
+          <div class="icon">🔄</div>
+          <h4>Auto-Save & History</h4>
+          <p>Never lose your work. Access previous versions and undo changes easily.</p>
+        </div>
+      </div>
+      
+      <div class="shortcut-table">
+        <h4>⌨️ Essential Shortcuts</h4>
+        <div class="shortcut-row">
+          <span>Generate Slide</span>
+          <kbd>Ctrl</kbd> + <kbd>Enter</kbd>
+        </div>
+        <div class="shortcut-row">
+          <span>Regenerate</span>
+          <kbd>Ctrl</kbd> + <kbd>R</kbd>
+        </div>
+        <div class="shortcut-row">
+          <span>Download</span>
+          <kbd>Ctrl</kbd> + <kbd>D</kbd>
+        </div>
+        <div class="shortcut-row">
+          <span>Share</span>
+          <kbd>Ctrl</kbd> + <kbd>S</kbd>
+        </div>
+        <div class="shortcut-row">
+          <span>Help</span>
+          <kbd>?</kbd>
+        </div>
+      </div>
+      
+      <center>
+        <a href="https://slidetheory.io/app?showShortcuts=true" class="cta-button">Try These Features →</a>
+      </center>
+    </div>
+    
+    <div class="footer">
+      <p>© 2026 SlideTheory</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "id": "tech-startup-series-b",
+  "name": "Tech Startup Series B",
+  "category": "Pitch Deck",
+  "icon": "🚀",
+  "description": "AI SaaS platform fundraising deck for Series B round",
+  "slideType": "Executive Summary",
+  "context": "NexusAI is an enterprise AI platform that helps Fortune 500 companies automate document processing and extract insights from unstructured data. We completed our Series A 18 months ago and have grown ARR from $2M to $8M. Now seeking $25M Series B to expand internationally and accelerate product development.",
+  "dataPoints": [
+    "ARR: $8.2M (310% growth YoY)",
+    "Customers: 47 enterprise clients",
+    "ACV: $175K average contract value",
+    "Gross Margin: 82%",
+    "Retention: 145% net revenue retention",
+    "Burn Rate: $450K/month",
+    "Runway: 18 months"
+  ],
+  "targetAudience": "Investors",
+  "framework": "Pyramid Principle"
+}

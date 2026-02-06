@@ -1,0 +1,20 @@
+{
+  "id": "board-financial-review",
+  "name": "Q3 Board Financials",
+  "category": "Financial",
+  "icon": "💰",
+  "description": "Quarterly financial performance for board presentation",
+  "slideType": "Financial Model",
+  "context": "Q3 2024 financial performance review for board of directors. Revenue beat guidance by 8% but margins compressed due to supply chain investments. Need to present clear path to 20% EBITDA margins by end of FY2025.",
+  "dataPoints": [
+    "Q3 Revenue: $28.5M (+23% YoY, +8% vs guidance)",
+    "Gross Margin: 64% (down from 68% YoY)",
+    "EBITDA: $3.2M (11% margin, down from 14%)",
+    "OpEx: $15.1M (+31% YoY)",
+    "Cash: $42M",
+    "Burn: $1.2M/month",
+    "FY2025 Target: $130M revenue, 20% EBITDA margin"
+  ],
+  "targetAudience": "Board",
+  "framework": "Waterfall Chart"
+}

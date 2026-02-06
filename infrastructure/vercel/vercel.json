@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/generate",
+      "dest": "/api/generate.js"
+    },
+    {
+      "src": "/api/generate-slide-v2",
+      "dest": "/api/generate-v2.js"
+    },
+    {
+      "src": "/api/generate-image",
+      "dest": "/api/generate-image.js"
+    },
+    {
+      "src": "/api/health",
+      "dest": "/api/health.js"
+    },
+    {
+      "src": "/api/waitlist",
+      "dest": "/api/waitlist.js"
+    },
+    {
+      "src": "/app/(.*)",
+      "dest": "/public/app/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
+    }
+  ],
+  "env": {
+    "KIMI_BASE_URL": "https://api.moonshot.cn/v1"
+  }
+}

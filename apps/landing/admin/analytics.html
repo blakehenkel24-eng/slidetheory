@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SlideTheory Analytics Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .card { @apply bg-white rounded-lg shadow-md p-6; }
+        .metric-value { @apply text-3xl font-bold text-gray-800; }
+        .metric-label { @apply text-sm text-gray-500 uppercase tracking-wide; }
+        .trend-up { @apply text-green-600; }
+        .trend-down { @apply text-red-600; }
+        .chart-container { @apply relative h-64 w-full; }
+        .nav-btn { @apply px-4 py-2 text-sm font-medium rounded-md transition-colors; }
+        .nav-btn.active { @apply bg-blue-600 text-white; }
+        .nav-btn:not(.active) { @apply bg-gray-100 text-gray-700 hover:bg-gray-200; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-2xl font-bold text-gray-900">📊 SlideTheory Analytics</h1>
+                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Live</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <select id="timeRange" class="px-4 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="24h">Last 24 Hours</option>
+                        <option value="7d" selected>Last 7 Days</option>
+                        <option value="30d">Last 30 Days</option>
+                    </select>
+                    <button onclick="refreshData()" class="p-2 text-gray-600 hover:text-gray-900 transition-colors" title="Refresh">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Navigation Tabs -->
+        <div class="flex space-x-2 mb-6">
+            <button onclick="showTab('overview')" id="tab-overview" class="nav-btn active">Overview</button>
+            <button onclick="showTab('slides')" id="tab-slides" class="nav-btn">Slides</button>
+            <button onclick="showTab('exports')" id="tab-exports" class="nav-btn">Exports</button>
+            <button onclick="showTab('funnel')" id="tab-funnel" class="nav-btn">Funnel</button>
+            <button onclick="showTab('errors')" id="tab-errors" class="nav-btn">Errors</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="content-overview" class="tab-content">
+            <!-- Key Metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="card">
+                    <p class="metric-label">Total Slides</p>
+                    <p class="metric-value" id="metric-total-slides">-</p>
+                    <p class="text-sm text-gray-600 mt-1">
+                        <span id="metric-cached-rate" class="font-medium">-</span>% cached
+                    </p>
+                </div>
+                <div class="card">
+                    <p class="metric-label">Total Exports</p>
+                    <p class="metric-value" id="metric-total-exports">-</p>
+                    <p class="text-sm text-gray-600 mt-1">
+                        <span id="metric-export-formats" class="font-medium">-</span> formats
+                    </p>
+                </div>
+                <div class="card">
+                    <p class="metric-label">Avg Generation Time</p>
+                    <p class="metric-value" id="metric-avg-time">-</p>
+                    <p class="text-sm text-gray-600 mt-1">seconds per slide</p>
+                </div>
+                <div class="card">
+                    <p class="metric-label">Conversion Rate</p>
+                    <p class="metric-value" id="metric-conversion">-</p>
+                    <p class="text-sm text-gray-600 mt-1">landing → export</p>
+                </div>
+            </div>
+
+            <!-- Charts Row 1 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">Slide Generation Trend</h3>
+                    <div class="chart-container">
+                        <canvas id="slidesChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">Export Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="exportsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 2 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">Popular Slide Types</h3>
+                    <div class="chart-container">
+                        <canvas id="typesChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">Hourly Activity</h3>
+                    <div class="chart-container">
+                        <canvas id="hourlyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slides Tab -->
+        <div id="content-slides" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 card">
+                    <h3 class="text-lg font-semibold mb-4">Slide Performance</h3>
+                    <div class="chart-container">
+                        <canvas id="slidePerformanceChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">Top Templates</h3>
+                    <div id="templates-list" class="space-y-3">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 card">
+                <h3 class="text-lg font-semibold mb-4">Popular Frameworks</h3>
+                <div class="chart-container">
+                    <canvas id="frameworksChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exports Tab -->
+        <div id="content-exports" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">Export Trends</h3>
+                    <div class="chart-container">
+                        <canvas id="exportTrendChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">Export Stats</h3>
+                    <div id="export-stats" class="space-y-4">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Funnel Tab -->
+        <div id="content-funnel" class="tab-content hidden">
+            <div class="card mb-6">
+                <h3 class="text-lg font-semibold mb-6">User Journey Funnel</h3>
+                <div class="relative">
+                    <!-- Funnel Visualization -->
+                    <div class="space-y-4" id="funnel-container">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="card bg-blue-50">
+                    <p class="metric-label text-blue-600">Landing → Form</p>
+                    <p class="metric-value text-blue-800" id="funnel-rate-1">-</p>
+                </div>
+                <div class="card bg-green-50">
+                    <p class="metric-label text-green-600">Form → Generation</p>
+                    <p class="metric-value text-green-800" id="funnel-rate-2">-</p>
+                </div>
+                <div class="card bg-purple-50">
+                    <p class="metric-label text-purple-600">Generation → Export</p>
+                    <p class="metric-value text-purple-800" id="funnel-rate-3">-</p>
+                </div>
+                <div class="card bg-orange-50">
+                    <p class="metric-label text-orange-600">Overall Conversion</p>
+                    <p class="metric-value text-orange-800" id="funnel-rate-4">-</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Errors Tab -->
+        <div id="content-errors" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2">
+                    <div class="card mb-6">
+                        <h3 class="text-lg font-semibold mb-4">Error Trends</h3>
+                        <div class="chart-container">
+                            <canvas id="errorsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-lg font-semibold mb-4">Recent Errors</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Endpoint</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="errors-table" class="bg-white divide-y divide-gray-200">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">Error Breakdown</h3>
+                    <div id="error-breakdown" class="space-y-3">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 flex items-center justify-between text-sm text-gray-500">
+            <p>Last updated: <span id="last-updated">-</span></p>
+            <p>Privacy-compliant analytics • No PII collected</p>
+        </div>
+    </main>
+
+    <script>
+        // Chart instances
+        const charts = {};
+        let currentData = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshData();
+            document.getElementById('timeRange').addEventListener('change', refreshData);
+        });
+
+        // Show tab
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            
+            // Re-render charts if needed
+            if (currentData) {
+                setTimeout(() => renderTabCharts(tabName), 10);
+            }
+        }
+
+        // Fetch and refresh data
+        async function refreshData() {
+            const range = document.getElementById('timeRange').value;
+            
+            try {
+                const response = await fetch(`/api/analytics/summary?range=${range}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentData = data;
+                    updateDashboard(data);
+                    document.getElementById('last-updated').textContent = new Date().toLocaleString();
+                }
+            } catch (error) {
+                console.error('Failed to fetch analytics:', error);
+            }
+        }
+
+        // Update dashboard with data
+        function updateDashboard(data) {
+            // Update metrics
+            document.getElementById('metric-total-slides').textContent = data.summary.totalSlides.toLocaleString();
+            document.getElementById('metric-cached-rate').textContent = data.summary.cacheHitRate;
+            document.getElementById('metric-total-exports').textContent = data.summary.totalExports.toLocaleString();
+            document.getElementById('metric-export-formats').textContent = Object.keys(data.exports.byFormat).length;
+            document.getElementById('metric-avg-time').textContent = (data.summary.avgGenerationTime / 1000).toFixed(2);
+            document.getElementById('metric-conversion').textContent = data.funnel.conversionRates.overall + '%';
+
+            // Update funnel rates
+            document.getElementById('funnel-rate-1').textContent = data.funnel.conversionRates.landingToForm + '%';
+            document.getElementById('funnel-rate-2').textContent = data.funnel.conversionRates.formToGeneration + '%';
+            document.getElementById('funnel-rate-3').textContent = data.funnel.conversionRates.generationToExport + '%';
+            document.getElementById('funnel-rate-4').textContent = data.funnel.conversionRates.overall + '%';
+
+            // Render charts
+            renderCharts(data);
+            renderFunnel(data.funnel);
+            renderErrors(data.errors);
+            renderTemplates(data.popular.templates);
+            renderExportStats(data.exports);
+        }
+
+        // Render charts
+        function renderCharts(data) {
+            // Slides trend chart
+            const slidesCtx = document.getElementById('slidesChart').getContext('2d');
+            if (charts.slides) charts.slides.destroy();
+            charts.slides = new Chart(slidesCtx, {
+                type: 'line',
+                data: {
+                    labels: data.trends.slides.map(s => s.date),
+                    datasets: [{
+                        label: 'Total',
+                        data: data.trends.slides.map(s => s.total),
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'Cached',
+                        data: data.trends.slides.map(s => s.cached),
+                        borderColor: 'rgb(16, 185, 129)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top' } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            // Exports pie chart
+            const exportCtx = document.getElementById('exportsChart').getContext('2d');
+            if (charts.exports) charts.exports.destroy();
+            const exportData = Object.entries(data.exports.byFormat);
+            charts.exports = new Chart(exportCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: exportData.map(([k]) => k.toUpperCase()),
+                    datasets: [{
+                        data: exportData.map(([,v]) => v),
+                        backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right' } }
+                }
+            });
+
+            // Slide types bar chart
+            const typesCtx = document.getElementById('typesChart').getContext('2d');
+            if (charts.types) charts.types.destroy();
+            charts.types = new Chart(typesCtx, {
+                type: 'bar',
+                data: {
+                    labels: data.popular.slideTypes.slice(0, 6).map(t => t.type),
+                    datasets: [{
+                        label: 'Count',
+                        data: data.popular.slideTypes.slice(0, 6).map(t => t.count),
+                        backgroundColor: 'rgba(59, 130, 246, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            // Hourly distribution chart
+            const hourlyCtx = document.getElementById('hourlyChart').getContext('2d');
+            if (charts.hourly) charts.hourly.destroy();
+            charts.hourly = new Chart(hourlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                    datasets: [{
+                        label: 'Activity',
+                        data: data.timeDistribution.hourly,
+                        backgroundColor: 'rgba(139, 92, 246, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        // Render tab-specific charts
+        function renderTabCharts(tabName) {
+            if (!currentData) return;
+
+            if (tabName === 'slides') {
+                // Slide performance chart
+                const perfCtx = document.getElementById('slidePerformanceChart').getContext('2d');
+                if (charts.slidePerf) charts.slidePerf.destroy();
+                charts.slidePerf = new Chart(perfCtx, {
+                    type: 'line',
+                    data: {
+                        labels: currentData.trends.slides.map(s => s.date),
+                        datasets: [{
+                            label: 'Generation Time (ms)',
+                            data: currentData.trends.slides.map(() => currentData.performance.avgMs),
+                            borderColor: 'rgb(245, 158, 11)',
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+
+                // Frameworks chart
+                const fwCtx = document.getElementById('frameworksChart').getContext('2d');
+                if (charts.frameworks) charts.frameworks.destroy();
+                charts.frameworks = new Chart(fwCtx, {
+                    type: 'horizontalBar',
+                    data: {
+                        labels: currentData.popular.frameworks.slice(0, 5).map(f => f.framework),
+                        datasets: [{
+                            label: 'Usage',
+                            data: currentData.popular.frameworks.slice(0, 5).map(f => f.count),
+                            backgroundColor: 'rgba(16, 185, 129, 0.8)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            if (tabName === 'exports') {
+                // Export trend chart
+                const trendCtx = document.getElementById('exportTrendChart').getContext('2d');
+                if (charts.exportTrend) charts.exportTrend.destroy();
+                charts.exportTrend = new Chart(trendCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: currentData.trends.exports.map(e => e.date),
+                        datasets: [{
+                            label: 'Exports',
+                            data: currentData.trends.exports.map(e => e.total),
+                            backgroundColor: 'rgba(59, 130, 246, 0.8)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            if (tabName === 'errors') {
+                // Errors chart
+                const errCtx = document.getElementById('errorsChart').getContext('2d');
+                if (charts.errors) charts.errors.destroy();
+                charts.errors = new Chart(errCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: currentData.errors.top.map(e => e.type),
+                        datasets: [{
+                            label: 'Count',
+                            data: currentData.errors.top.map(e => e.count),
+                            backgroundColor: 'rgba(239, 68, 68, 0.8)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+
+        // Render funnel
+        function renderFunnel(funnel) {
+            const container = document.getElementById('funnel-container');
+            const steps = [
+                { key: 'landingPage', label: 'Landing Page', color: 'bg-blue-500' },
+                { key: 'formStarted', label: 'Form Started', color: 'bg-blue-400' },
+                { key: 'formCompleted', label: 'Form Completed', color: 'bg-green-400' },
+                { key: 'generationCompleted', label: 'Generation Completed', color: 'bg-green-500' },
+                { key: 'exportCompleted', label: 'Export Completed', color: 'bg-purple-500' }
+            ];
+
+            const max = funnel.landingPage || 1;
+            
+            container.innerHTML = steps.map(step => {
+                const value = funnel[step.key] || 0;
+                const width = (value / max * 100).toFixed(1);
+                return `
+                    <div class="relative">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm font-medium text-gray-700">${step.label}</span>
+                            <span class="text-sm text-gray-500">${value.toLocaleString()}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-8 overflow-hidden">
+                            <div class="${step.color} h-full flex items-center justify-end px-3 transition-all duration-500" style="width: ${width}%; min-width: 50px;">
+                                <span class="text-white text-sm font-medium">${width}%</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render errors
+        function renderErrors(errors) {
+            // Error breakdown
+            const breakdown = document.getElementById('error-breakdown');
+            breakdown.innerHTML = errors.top.map(err => `
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-700">${err.type}</span>
+                    <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">${err.count}</span>
+                </div>
+            `).join('');
+
+            // Recent errors table
+            const table = document.getElementById('errors-table');
+            table.innerHTML = errors.recent.slice(0, 10).map(err => `
+                <tr>
+                    <td class="px-4 py-3 text-sm text-gray-900">${new Date(err.timestamp).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-sm text-red-600">${err.type}</td>
+                    <td class="px-4 py-3 text-sm text-gray-500">${err.endpoint}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Render templates
+        function renderTemplates(templates) {
+            const container = document.getElementById('templates-list');
+            if (!templates || templates.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-sm">No template data yet</p>';
+                return;
+            }
+            container.innerHTML = templates.map((t, i) => `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-2xl font-bold text-gray-300">#${i + 1}</span>
+                        <span class="text-sm text-gray-700">${t.id}</span>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-medium text-gray-900">${t.usage} uses</p>
+                        ${t.rating ? `<p class="text-xs text-yellow-500">★ ${t.rating.toFixed(1)}</p>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render export stats
+        function renderExportStats(exports) {
+            const container = document.getElementById('export-stats');
+            const byFormat = Object.entries(exports.byFormat);
+            if (byFormat.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-sm">No export data yet</p>';
+                return;
+            }
+            container.innerHTML = byFormat.map(([format, count]) => {
+                const total = exports.total || 1;
+                const pct = ((count / total) * 100).toFixed(1);
+                return `
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium text-gray-700">${format.toUpperCase()}</span>
+                            <span class="text-sm text-gray-500">${count} (${pct}%)</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-500 h-2 rounded-full" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(refreshData, 30000);
+    </script>
+</body>
+</html>

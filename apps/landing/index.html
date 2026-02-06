@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SlideTheory v2.0 - MBB-Inspired Slide Generation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Navigation Styles */
+    .nav-header {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: #0f172a;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      font-size: 20px;
+      font-weight: 600;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .nav-logo-accent {
+      color: #3b82f6;
+      font-weight: 700;
+    }
+
+    .nav-logo .version-badge {
+      margin-left: 8px;
+      font-size: 11px;
+      padding: 2px 8px;
+      background: rgba(59, 130, 246, 0.2);
+      color: #3b82f6;
+      border-radius: 4px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #94a3b8;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .nav-link.active {
+      color: #fff;
+      background: rgba(59, 130, 246, 0.15);
+    }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    }
+
+    /* Mobile Menu Toggle */
+    .mobile-menu-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 8px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      width: 44px;
+      height: 44px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mobile-menu-toggle span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: #fff;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-menu-toggle.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .mobile-menu-toggle.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .mobile-menu-toggle.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    /* Mobile Navigation */
+    @media (max-width: 768px) {
+      .mobile-menu-toggle {
+        display: flex;
+      }
+
+      .nav-links {
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        flex-direction: column;
+        background: #0f172a;
+        padding: 24px;
+        gap: 8px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        align-items: stretch;
+      }
+
+      .nav-links.open {
+        transform: translateX(0);
+      }
+
+      .nav-link {
+        padding: 16px;
+        font-size: 16px;
+        justify-content: center;
+      }
+
+      .nav-cta .btn-cta {
+        display: none;
+      }
+
+      .nav-cta-mobile {
+        display: block;
+        margin-top: 16px;
+        text-align: center;
+      }
+
+      .nav-cta-mobile .btn-cta {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .nav-cta-mobile {
+        display: none;
+      }
+    }
+
+    /* Update app background for dark theme */
+    .app {
+      background: #0f172a;
+    }
+
+    .header {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Skip to content link for keyboard users -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  
+  <!-- ARIA live region for status announcements -->
+  <div id="statusAnnouncer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  
+  <div class="app">
+    <!-- Header -->
+    <header class="nav-header">
+      <div class="nav-left">
+        <a href="index.html" class="nav-logo">
+          Slide<span class="nav-logo-accent">Theory</span>
+          <span class="version-badge">v2.0</span>
+        </a>
+        <nav>
+          <ul class="nav-links" id="navLinks">
+            <li><a href="index.html" class="nav-link active">Home</a></li>
+            <li><a href="how-it-works.html" class="nav-link">How it Works</a></li>
+            <li><a href="resources.html" class="nav-link">Resources</a></li>
+            <li><a href="blog.html" class="nav-link">Blog</a></li>
+            <li class="nav-cta-mobile"><a href="#slideFormV2" class="btn-cta" onclick="document.getElementById('slideTypeV2').focus(); return false;">Get Started</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="nav-cta">
+        <a href="#slideFormV2" class="btn-cta" onclick="document.getElementById('slideTypeV2').focus(); return false;">Get Started</a>
+        <button class="icon-btn" id="helpBtn" title="Help (?)" data-shortcut="?" aria-label="Open help and keyboard shortcuts (press ?)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <path d="M12 17h.01"/>
+          </svg>
+        </button>
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+      <!-- Input Panel -->
+      <aside class="input-panel">
+        <div class="panel-header">
+          <h1 class="panel-title">Create Your Slide</h1>
+          <p class="panel-subtitle">Generate professional consulting slides with MBB-style structure. Press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to generate.</p>
+        </div>
+
+        <!-- Version Toggle -->
+        <div class="version-toggle">
+          <button class="version-btn active" data-version="v2">v2.0 MBB Templates</button>
+          <button class="version-btn" data-version="v1">v1.0 Classic</button>
+        </div>
+
+        <!-- Error Alert Container -->
+        <div id="errorContainer" class="hidden"></div>
+
+        <!-- V2 Form -->
+        <form id="slideFormV2" class="slide-form-v2">
+          <!-- Slide Type -->
+          <div class="form-section">
+            <label class="form-label" for="slideTypeV2">
+              Slide Type<span class="required">*</span>
+            </label>
+            <select class="select" id="slideTypeV2" name="slideType" required>
+              <option value="">Select slide type...</option>
+              <option value="Executive Summary">Executive Summary</option>
+              <option value="Horizontal Flow">Horizontal Flow (Process)</option>
+              <option value="Vertical Flow">Vertical Flow (Hierarchy)</option>
+              <option value="Graph/Chart">Graph/Chart (Data)</option>
+              <option value="General">General (Flexible)</option>
+            </select>
+            <div class="form-hint" id="slideTypeHintV2"></div>
+          </div>
+
+          <!-- Audience -->
+          <div class="form-section">
+            <label class="form-label" for="audienceV2">
+              Audience<span class="required">*</span>
+            </label>
+            <select class="select" id="audienceV2" name="audience" required>
+              <option value="">Select audience...</option>
+              <option value="C-Suite/Board">C-Suite/Board (High-level)</option>
+              <option value="External Client">External Client</option>
+              <option value="Internal/Working Team">Internal/Working Team</option>
+              <option value="PE/Investors">PE/Investors (Data-heavy)</option>
+            </select>
+            <div class="form-hint" id="audienceHintV2">Adjusts whitespace and detail level automatically</div>
+          </div>
+
+          <!-- Key Takeaway -->
+          <div class="form-section">
+            <label class="form-label" for="keyTakeawayV2">
+              Key Takeaway<span class="required">*</span>
+            </label>
+            <p class="form-description">The single most important message to communicate.</p>
+            <input 
+              type="text"
+              class="input" 
+              id="keyTakeawayV2" 
+              name="keyTakeaway" 
+              maxlength="150"
+              placeholder="E.g., Revenue growth of 25% positions us for Series B..."
+              required
+            />
+            <div class="char-counter" id="keyTakeawayCounterV2">0 / 150</div>
+          </div>
+
+          <!-- Context -->
+          <div class="form-section">
+            <label class="form-label" for="contextV2">
+              Context<span class="required">*</span>
+            </label>
+            <p class="form-description">Background, research findings, client context, strategic considerations.</p>
+            <textarea 
+              class="textarea" 
+              id="contextV2" 
+              name="context" 
+              rows="5" 
+              maxlength="2000"
+              placeholder="Describe the business situation, market dynamics, competitive landscape, and any relevant strategic considerations..."
+              required
+            ></textarea>
+            <div class="char-counter" id="contextCounterV2">0 / 2000</div>
+          </div>
+
+          <!-- Presentation Mode -->
+          <div class="form-section">
+            <label class="form-label">Presentation Mode</label>
+            <div class="toggle-group">
+              <button type="button" class="toggle-btn active" data-mode="presentation" id="modePresentationV2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="12" rx="2"/>
+                  <path d="M8 20h8"/>
+                  <path d="M12 16v4"/>
+                </svg>
+                Presentation (Less detail)
+              </button>
+              <button type="button" class="toggle-btn" data-mode="read" id="modeReadV2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                </svg>
+                Read Mode (More detail)
+              </button>
+            </div>
+          </div>
+
+          <!-- Data Input -->
+          <div class="form-section">
+            <label class="form-label" for="dataInputV2">Data Input</label>
+            <p class="form-description">Paste Excel data, CSV, or key metrics. Optional.</p>
+            <textarea 
+              class="textarea textarea--data" 
+              id="dataInputV2" 
+              name="dataInput" 
+              rows="4" 
+              maxlength="2000"
+              placeholder="Revenue:	$5.2M (+23%)
+Customers:	1,240 (+45%)
+Gross Margin:	68% (+4pp)"
+            ></textarea>
+            <div class="file-upload-wrapper">
+              <input type="file" id="dataFileV2" class="file-input" accept=".csv,.xlsx,.xls,.txt" />
+              <label for="dataFileV2" class="file-upload-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                Upload file
+              </label>
+              <span class="file-name" id="fileNameV2"></span>
+            </div>
+          </div>
+
+          <!-- Generate Button -->
+          <button type="submit" class="btn btn--primary btn--lg btn--full" id="generateBtnV2" disabled>
+            <svg class="btn__icon" id="generateIconV2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+            <span id="generateTextV2">Generate Slide</span>
+            <span class="btn__shortcut">Ctrl+Enter</span>
+          </button>
+        </form>
+
+        <!-- V1 Form (Hidden by default) -->
+        <form id="slideFormV1" class="slide-form-v1 hidden">
+          <!-- Slide Type -->
+          <div class="form-section">
+            <label class="form-label" for="slideTypeV1">Slide Type<span class="required">*</span></label>
+            <select class="select" id="slideTypeV1" name="slideType" required>
+              <option value="">Select slide type...</option>
+              <optgroup label="Core Slides">
+                <option value="Executive Summary">Executive Summary</option>
+                <option value="Market Analysis">Market Analysis</option>
+                <option value="Financial Model">Financial Model</option>
+              </optgroup>
+              <optgroup label="Strategic Analysis">
+                <option value="Competitive Analysis">Competitive Analysis</option>
+                <option value="Growth Strategy">Growth Strategy</option>
+                <option value="Risk Assessment">Risk Assessment</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <!-- Context -->
+          <div class="form-section">
+            <label class="form-label" for="contextV1">Context<span class="required">*</span></label>
+            <textarea class="textarea" id="contextV1" name="context" rows="4" maxlength="500" placeholder="Describe the purpose, key message, and background..." required></textarea>
+            <div class="char-counter" id="contextCounterV1">0 / 500</div>
+          </div>
+
+          <!-- Data Points -->
+          <div class="form-section">
+            <label class="form-label" for="dataPointsV1">Data Points</label>
+            <textarea class="textarea" id="dataPointsV1" name="dataPoints" rows="4" maxlength="1000" placeholder="Revenue: $4.2M (+23% YoY)
+Gross Margin: 68%..."></textarea>
+          </div>
+
+          <!-- Audience -->
+          <div class="form-section">
+            <label class="form-label" for="audienceV1">Target Audience<span class="required">*</span></label>
+            <select class="select" id="audienceV1" name="audience" required>
+              <option value="">Select audience...</option>
+              <option value="C-Suite">C-Suite</option>
+              <option value="Board">Board Members</option>
+              <option value="Investors">Investors</option>
+              <option value="Internal Team">Internal Team</option>
+              <option value="Clients">Clients</option>
+              <option value="Analysts">Analysts</option>
+            </select>
+          </div>
+
+          <!-- Framework -->
+          <div class="form-section">
+            <label class="form-label" for="frameworkV1">Framework</label>
+            <select class="select" id="frameworkV1" name="framework">
+              <option value="">None (Auto)</option>
+              <option value="Pyramid Principle">Pyramid Principle</option>
+              <option value="MECE">MECE</option>
+              <option value="2x2 Matrix">2x2 Matrix</option>
+              <option value="Waterfall Chart">Waterfall Chart</option>
+              <option value="SWOT">SWOT Analysis</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn--primary btn--lg btn--full" id="generateBtnV1" disabled>
+            <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+            Generate Slide
+          </button>
+        </form>
+      </aside>
+
+      <!-- Preview Panel -->
+      <main class="preview-panel" id="main-content">
+        <div class="slide-preview">
+          <div class="slide-preview__aspect slide-preview--empty" id="previewContainer">
+            <!-- Empty State -->
+            <div id="emptyState">
+              <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <line x1="9" y1="9" x2="15" y2="9"/>
+                <line x1="9" y1="13" x2="15" y2="13"/>
+                <line x1="9" y1="17" x2="11" y2="17"/>
+              </svg>
+              <p class="empty-state__title">Your slide will appear here</p>
+              <p class="empty-state__text">Fill out the form and click Generate to create your professional consulting slide.</p>
+            </div>
+
+            <!-- Loading Overlay -->
+            <div id="loadingOverlay" class="loading-overlay hidden">
+              <div class="spinner"></div>
+              <p class="loading-text" id="loadingText">Creating your slide...</p>
+              <div class="loading-progress">
+                <div class="loading-progress-bar" id="loadingProgressBar"></div>
+              </div>
+              <p class="loading-steps" id="loadingSteps">Analyzing context...</p>
+              <button type="button" class="btn btn--secondary btn--sm" id="cancelBtn" style="margin-top: 1.5rem;">
+                Cancel
+              </button>
+            </div>
+
+            <!-- Slide Image -->
+            <img id="slideImage" class="slide-preview__image hidden" alt="Generated slide">
+            
+            <!-- Success Animation Overlay -->
+            <div id="successOverlay" class="success-overlay hidden">
+              <div class="success-checkmark">
+                <svg viewBox="0 0 52 52" class="checkmark" aria-hidden="true">
+                  <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                  <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+              </div>
+              <p class="success-text">Slide ready!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="action-bar" id="actionBar" style="display: none;">
+          <button class="btn btn--secondary" id="regenerateBtn">
+            <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+              <path d="M21 3v5h-5"/>
+              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+              <path d="M8 16H3v5"/>
+            </svg>
+            Regenerate
+          </button>
+          <div class="dropdown">
+            <button class="btn btn--primary" id="downloadBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="downloadMenu">
+              <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Download
+              <svg class="btn__icon btn__icon--small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </button>
+            <div class="dropdown-menu" id="downloadMenu" role="menu" aria-labelledby="downloadBtn">
+              <button class="dropdown-item" data-format="png" role="menuitem">
+                <span class="dropdown-icon" aria-hidden="true">🖼️</span>
+                <span class="dropdown-label">PNG Image</span>
+              </button>
+              <button class="dropdown-item" data-format="pptx" role="menuitem">
+                <span class="dropdown-icon" aria-hidden="true">📊</span>
+                <span class="dropdown-label">PowerPoint (.pptx)</span>
+              </button>
+              <button class="dropdown-item" data-format="pdf" role="menuitem">
+                <span class="dropdown-icon" aria-hidden="true">📄</span>
+                <span class="dropdown-label">PDF Document</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer"></div>
+
+  <!-- Keyboard Shortcuts Modal -->
+  <div class="modal hidden" id="shortcutsModal" role="dialog" aria-modal="true" aria-labelledby="shortcutsTitle" aria-describedby="shortcutsDesc">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="shortcutsTitle">Keyboard Shortcuts</h3>
+        <p class="sr-only" id="shortcutsDesc">Use Tab to navigate between buttons, Escape to close</p>
+        <button class="modal-close" id="modalClose" aria-label="Close keyboard shortcuts dialog">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M18 6 6 18"/>
+            <path d="m6 6 12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="shortcut-list">
+          <div class="shortcut-item">
+            <kbd>Ctrl</kbd>+<kbd>Enter</kbd>
+            <span>Generate slide</span>
+          </div>
+          <div class="shortcut-item">
+            <kbd>Ctrl</kbd>+<kbd>R</kbd>
+            <span>Regenerate slide</span>
+          </div>
+          <div class="shortcut-item">
+            <kbd>Ctrl</kbd>+<kbd>D</kbd>
+            <span>Download slide</span>
+          </div>
+          <div class="shortcut-item">
+            <kbd>?</kbd>
+            <span>Show this help</span>
+          </div>
+          <div class="shortcut-item">
+            <kbd>Esc</kbd>
+            <span>Close modal / Cancel</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Mobile menu toggle
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    mobileMenuToggle.addEventListener('click', () => {
+      mobileMenuToggle.classList.toggle('active');
+      navLinks.classList.toggle('open');
+    });
+
+    // Close mobile menu when clicking a link
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenuToggle.classList.remove('active');
+        navLinks.classList.remove('open');
+      });
+    });
+  </script>
+</body>
+</html>

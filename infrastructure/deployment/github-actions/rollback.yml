@@ -1,0 +1,74 @@
+# Manual Rollback Workflow
+name: Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to rollback'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      version:
+        description: 'Version to rollback to (or "rollback" for previous)'
+        required: true
+        default: 'rollback'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Rollback ${{ github.event.inputs.environment }}
+        env:
+          ENV: ${{ github.event.inputs.environment }}
+          VERSION: ${{ github.event.inputs.version }}
+          SSH_PRIVATE_KEY: ${{ secrets[format('{0}_SSH_KEY', github.event.inputs.environment)] }}
+          SSH_HOST: ${{ secrets[format('{0}_HOST', github.event.inputs.environment)] }}
+          SSH_USER: ${{ secrets[format('{0}_USER', github.event.inputs.environment)] }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+          
+          ssh -i ~/.ssh/deploy_key $SSH_USER@$SSH_HOST << EOF
+            cd /opt/slidetheory
+            
+            if [ "$VERSION" = "rollback" ]; then
+              # Rollback to previous image
+              docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:rollback ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            else
+              # Rollback to specific version
+              docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$VERSION
+              docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$VERSION ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            fi
+            
+            # Restart with rolled back image
+            docker-compose -f deployment/docker/docker-compose.yml up -d
+            
+            # Health check
+            sleep 10
+            curl -f http://localhost:3000/api/health || exit 1
+          EOF
+
+      - name: Notify rollback
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "🔄 SlideTheory rolled back on ${{ github.event.inputs.environment }} to ${{ github.event.inputs.version }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

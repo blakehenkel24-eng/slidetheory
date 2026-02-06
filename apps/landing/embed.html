@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SlideTheory Embed Widget</title>
+  
+  <!-- Prevent indexing of embed pages -->
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Plausible Analytics (Privacy-Focused) -->
+  <script defer data-domain="slidetheory.io" src="https://plausible.io/js/script.outbound-links.file-downloads.tagged-events.js"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --bg: #ffffff;
+      --bg-secondary: #f8fafc;
+      --text: #0f172a;
+      --text-secondary: #64748b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --bg-secondary: #1e293b;
+      --text: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --border: #334155;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .embed-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 1rem;
+    }
+    
+    .embed-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+    
+    .embed-logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+    }
+    
+    .embed-logo span {
+      color: var(--primary);
+    }
+    
+    .embed-powered {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+    
+    .embed-powered a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    
+    .slide-container {
+      flex: 1;
+      background: var(--bg-secondary);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      min-height: 400px;
+    }
+    
+    .slide-image {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    .slide-placeholder {
+      text-align: center;
+      color: var(--text-secondary);
+    }
+    
+    .slide-placeholder svg {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+    
+    .embed-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      padding: 1rem 0;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      text-decoration: none;
+    }
+    
+    .btn--primary {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn--primary:hover {
+      background: var(--primary-dark);
+    }
+    
+    .btn--secondary {
+      background: var(--bg-secondary);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    
+    .btn--secondary:hover {
+      background: var(--border);
+    }
+    
+    .embed-footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      border-top: 1px solid var(--border);
+    }
+    
+    /* Hide elements based on params */
+    .embed-container.hide-header .embed-header,
+    .embed-container.hide-footer .embed-footer {
+      display: none;
+    }
+    
+    /* Responsive */
+    @media (max-width: 640px) {
+      .embed-container {
+        padding: 0.5rem;
+      }
+      
+      .slide-container {
+        padding: 1rem;
+        min-height: 300px;
+      }
+      
+      .embed-actions {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="embed-container" id="embedContainer">
+    <header class="embed-header">
+      <a href="https://slidetheory.io" target="_blank" class="embed-logo">
+        Slide<span>Theory</span>
+      </a>
+      <span class="embed-powered">
+        Powered by <a href="https://slidetheory.io" target="_blank">SlideTheory</a>
+      </span>
+    </header>
+    
+    <div class="slide-container" id="slideContainer">
+      <div class="slide-placeholder" id="slidePlaceholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <line x1="9" y1="9" x2="15" y2="9"/>
+          <line x1="9" y1="13" x2="15" y2="13"/>
+          <line x1="9" y1="17" x2="11" y2="17"/>
+        </svg>
+        <p>Create amazing consulting slides with AI</p>
+      </div>
+      <img id="slideImage" class="slide-image hidden" alt="Generated slide">
+    </div>
+    
+    <div class="embed-actions">
+      <a href="https://slidetheory.io" target="_blank" class="btn btn--primary" id="createSlideBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+        Create Your Slide
+      </a>
+      <button class="btn btn--secondary" id="shareBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="18" cy="5" r="3"/>
+          <circle cx="6" cy="12" r="3"/>
+          <circle cx="18" cy="19" r="3"/>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+        </svg>
+        Share
+      </button>
+    </div>
+    
+    <footer class="embed-footer">
+      <p>© 2026 SlideTheory · <a href="https://slidetheory.io/privacy.html" target="_blank">Privacy</a> · <a href="https://slidetheory.io/terms.html" target="_blank">Terms</a></p>
+    </footer>
+  </div>
+
+  <script>
+    // Parse URL parameters
+    const params = new URLSearchParams(window.location.search);
+    const slideId = params.get('slide');
+    const hideHeader = params.get('header') === 'false';
+    const hideFooter = params.get('footer') === 'false';
+    const darkMode = params.get('theme') === 'dark';
+    
+    // Apply theme
+    if (darkMode) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    
+    // Apply visibility settings
+    const container = document.getElementById('embedContainer');
+    if (hideHeader) container.classList.add('hide-header');
+    if (hideFooter) container.classList.add('hide-footer');
+    
+    // Load slide if ID provided
+    if (slideId) {
+      const slideImage = document.getElementById('slideImage');
+      const slidePlaceholder = document.getElementById('slidePlaceholder');
+      
+      // In production, this would fetch the slide image from your backend
+      // For now, we'll simulate with a placeholder
+      slideImage.src = `/api/slides/${slideId}.png`;
+      slideImage.classList.remove('hidden');
+      slidePlaceholder.classList.add('hidden');
+      
+      // Handle image load error
+      slideImage.onerror = () => {
+        slideImage.classList.add('hidden');
+        slidePlaceholder.classList.remove('hidden');
+        slidePlaceholder.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <p>Slide not found or expired</p>
+        `;
+      };
+    }
+    
+    // Share button functionality
+    document.getElementById('shareBtn').addEventListener('click', async () => {
+      const shareUrl = slideId 
+        ? `https://slidetheory.io/s/${slideId}`
+        : 'https://slidetheory.io';
+        
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'SlideTheory - AI Slide Generator',
+            text: 'Check out this slide I created with SlideTheory!',
+            url: shareUrl
+          });
+        } catch (err) {
+          console.log('Share cancelled');
+        }
+      } else {
+        // Fallback to clipboard
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          const btn = document.getElementById('shareBtn');
+          const originalText = btn.innerHTML;
+          btn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Copied!
+          `;
+          setTimeout(() => {
+            btn.innerHTML = originalText;
+          }, 2000);
+        });
+      }
+    });
+    
+    // Track embed loads
+    if (window.plausible) {
+      plausible('Embed Loaded', { 
+        props: { 
+          slide_id: slideId || 'none',
+          theme: darkMode ? 'dark' : 'light'
+        }
+      });
+    }
+    
+    // Post message to parent for iframe resizing
+    function notifyParent() {
+      const height = document.body.scrollHeight;
+      window.parent.postMessage({
+        type: 'slidetheory-resize',
+        height: height
+      }, '*');
+    }
+    
+    // Notify on load and resize
+    window.addEventListener('load', notifyParent);
+    window.addEventListener('resize', notifyParent);
+  </script>
+</body>
+</html>

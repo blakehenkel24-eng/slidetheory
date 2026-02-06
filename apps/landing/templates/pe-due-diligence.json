@@ -1,0 +1,21 @@
+{
+  "id": "pe-due-diligence",
+  "name": "PE Due Diligence Summary",
+  "category": "Due Diligence",
+  "icon": "🔍",
+  "description": "Private equity acquisition target evaluation",
+  "slideType": "Financial Model",
+  "context": "TargetCo is a B2B software company specializing in supply chain management solutions. The company has $45M ARR, 15% EBITDA margins, and serves 200+ enterprise customers. We're evaluating this as a platform investment with potential for roll-up acquisitions in adjacent verticals.",
+  "dataPoints": [
+    "Revenue: $45M (18% CAGR last 3 years)",
+    "EBITDA: $6.8M (15% margin)",
+    "Rule of 40: 33%",
+    "CAC Payback: 14 months",
+    "LTV/CAC: 4.2x",
+    "Gross Retention: 91%",
+    "Net Retention: 108%",
+    "Asking Valuation: $180M (4x revenue)"
+  ],
+  "targetAudience": "Investors",
+  "framework": "Waterfall Chart"
+}

@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SlideTheory - Blog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Navigation Styles */
+    .nav-header {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: #0f172a;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      font-size: 20px;
+      font-weight: 600;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .nav-logo-accent {
+      color: #3b82f6;
+      font-weight: 700;
+    }
+
+    .nav-logo .version-badge {
+      margin-left: 8px;
+      font-size: 11px;
+      padding: 2px 8px;
+      background: rgba(59, 130, 246, 0.2);
+      color: #3b82f6;
+      border-radius: 4px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #94a3b8;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .nav-link.active {
+      color: #fff;
+      background: rgba(59, 130, 246, 0.15);
+    }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 8px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      width: 44px;
+      height: 44px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mobile-menu-toggle span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: #fff;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-menu-toggle.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .mobile-menu-toggle.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .mobile-menu-toggle.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    @media (max-width: 768px) {
+      .mobile-menu-toggle {
+        display: flex;
+      }
+
+      .nav-links {
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        flex-direction: column;
+        background: #0f172a;
+        padding: 24px;
+        gap: 8px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        align-items: stretch;
+      }
+
+      .nav-links.open {
+        transform: translateX(0);
+      }
+
+      .nav-link {
+        padding: 16px;
+        font-size: 16px;
+        justify-content: center;
+      }
+
+      .nav-cta .btn-cta {
+        display: none;
+      }
+
+      .nav-cta-mobile {
+        display: block;
+        margin-top: 16px;
+        text-align: center;
+      }
+
+      .nav-cta-mobile .btn-cta {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .nav-cta-mobile {
+        display: none;
+      }
+    }
+
+    .app {
+      background: #0f172a;
+    }
+
+    .header {
+      display: none;
+    }
+
+    /* Blog Page Specific Styles */
+    .blog-main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    .blog-hero {
+      text-align: center;
+      margin-bottom: 48px;
+      padding: 40px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .blog-title {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .blog-subtitle {
+      font-size: 18px;
+      color: #94a3b8;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Featured Post */
+    .featured-post {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(124, 58, 237, 0.15) 100%);
+      border: 1px solid rgba(37, 99, 235, 0.3);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    .featured-image {
+      min-height: 300px;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.3) 0%, rgba(124, 58, 237, 0.3) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 80px;
+    }
+
+    .featured-content {
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .featured-label {
+      display: inline-block;
+      padding: 6px 14px;
+      background: #2563eb;
+      color: #fff;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+      width: fit-content;
+    }
+
+    .featured-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #fff;
+      line-height: 1.3;
+    }
+
+    .featured-excerpt {
+      font-size: 16px;
+      color: #94a3b8;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .featured-meta {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    .featured-meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .read-more-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #3b82f6;
+      font-weight: 600;
+      margin-top: 20px;
+      text-decoration: none;
+      transition: gap 0.2s;
+    }
+
+    .read-more-link:hover {
+      gap: 12px;
+    }
+
+    /* Category Pills */
+    .category-pills {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .category-pill {
+      padding: 8px 18px;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      color: #94a3b8;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .category-pill:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    .category-pill.active {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #fff;
+    }
+
+    /* Blog Grid */
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 28px;
+    }
+
+    .blog-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .blog-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(37, 99, 235, 0.5);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    .blog-card.hidden {
+      display: none;
+    }
+
+    .blog-card-image {
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(124, 58, 237, 0.15) 100%);
+    }
+
+    .blog-card-content {
+      padding: 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .blog-card-category {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      width: fit-content;
+    }
+
+    .blog-card-category.strategy {
+      background: rgba(37, 99, 235, 0.2);
+      color: #60a5fa;
+    }
+
+    .blog-card-category.writing {
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+    }
+
+    .blog-card-category.framework {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+    }
+
+    .blog-card-category.career {
+      background: rgba(168, 85, 247, 0.2);
+      color: #c084fc;
+    }
+
+    .blog-card-category.analysis {
+      background: rgba(236, 72, 153, 0.2);
+      color: #f472b6;
+    }
+
+    .blog-card-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #fff;
+      line-height: 1.4;
+    }
+
+    .blog-card-excerpt {
+      font-size: 14px;
+      color: #94a3b8;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      flex: 1;
+    }
+
+    .blog-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 13px;
+      color: #64748b;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* Article Modal */
+    .article-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .article-modal.hidden {
+      display: none;
+    }
+
+    .article-modal .modal-backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(4px);
+    }
+
+    .article-modal .modal-content {
+      position: relative;
+      background: #1e293b;
+      border-radius: 20px;
+      max-width: 800px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .article-modal-header {
+      padding: 40px 40px 0;
+      position: relative;
+    }
+
+    .article-modal-category {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    .article-modal-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #fff;
+      line-height: 1.2;
+      padding-right: 50px;
+    }
+
+    .article-modal-meta {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 24px;
+    }
+
+    .article-modal-body {
+      padding: 0 40px 40px;
+    }
+
+    .article-content {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #cbd5e1;
+    }
+
+    .article-content h2 {
+      font-size: 22px;
+      font-weight: 600;
+      color: #fff;
+      margin: 32px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .article-content h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+      margin: 24px 0 12px;
+    }
+
+    .article-content p {
+      margin-bottom: 16px;
+    }
+
+    .article-content ul, .article-content ol {
+      margin: 0 0 16px;
+      padding-left: 24px;
+    }
+
+    .article-content li {
+      margin-bottom: 8px;
+    }
+
+    .article-content strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .article-content blockquote {
+      border-left: 3px solid #2563eb;
+      padding-left: 20px;
+      margin: 24px 0;
+      font-style: italic;
+      color: #94a3b8;
+    }
+
+    .article-tip {
+      background: rgba(37, 99, 235, 0.1);
+      border: 1px solid rgba(37, 99, 235, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 24px 0;
+    }
+
+    .article-tip-title {
+      font-weight: 600;
+      color: #60a5fa;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .blog-title {
+        font-size: 32px;
+      }
+
+      .featured-post {
+        grid-template-columns: 1fr;
+      }
+
+      .featured-image {
+        min-height: 200px;
+      }
+
+      .blog-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .article-modal .modal-content {
+        max-height: 100vh;
+        border-radius: 0;
+        margin: 0;
+      }
+
+      .article-modal-header,
+      .article-modal-body {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .article-modal-title {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  
+  <div class="app">
+    <!-- Header -->
+    <header class="nav-header">
+      <div class="nav-left">
+        <a href="index.html" class="nav-logo">
+          Slide<span class="nav-logo-accent">Theory</span>
+          <span class="version-badge">Blog</span>
+        </a>
+        <nav>
+          <ul class="nav-links" id="navLinks">
+            <li><a href="index.html" class="nav-link">Home</a></li>
+            <li><a href="how-it-works.html" class="nav-link">How it Works</a></li>
+            <li><a href="resources.html" class="nav-link">Resources</a></li>
+            <li><a href="blog.html" class="nav-link active">Blog</a></li>
+            <li class="nav-cta-mobile"><a href="index.html" class="btn-cta">Get Started</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="nav-cta">
+        <a href="index.html" class="btn-cta">Get Started</a>
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="blog-main" id="main-content">
+      <!-- Hero -->
+      <section class="blog-hero">
+        <h1 class="blog-title">Consulting Insights</h1>
+        <p class="blog-subtitle">Practical strategies, frameworks, and techniques from the world's top consulting firms. Learn to think and present like McKinsey, BCG, and Bain.</p>
+      </section>
+
+      <!-- Featured Post -->
+      <article class="featured-post" data-id="featured-1">
+        <div class="featured-image">🎯</div>
+        <div class="featured-content">
+          <span class="featured-label">Featured</span>
+          <h2 class="featured-title">How to Write Slide Titles That Get Executive Attention</h2>
+          <p class="featured-excerpt">The difference between a good presentation and a great one often comes down to slide titles. Learn the "Action Title" technique that top consultants use to communicate the "so what" in every slide.</p>
+          <div class="featured-meta">
+            <span>✍️ Slide Writing</span>
+            <span>📅 Feb 5, 2026</span>
+            <span>⏱️ 8 min read</span>
+          </div>
+          <a href="#" class="read-more-link" data-article="action-titles">Read article →</a>
+        </div>
+      </article>
+
+      <!-- Category Filters -->
+      <div class="category-pills">
+        <button class="category-pill active" data-category="all">All Posts</button>
+        <button class="category-pill" data-category="strategy">Strategy</button>
+        <button class="category-pill" data-category="writing">Slide Writing</button>
+        <button class="category-pill" data-category="framework">Frameworks</button>
+        <button class="category-pill" data-category="career">Career</button>
+        <button class="category-pill" data-category="analysis">Analysis</button>
+      </div>
+
+      <!-- Blog Grid -->
+      <div class="blog-grid" id="blogGrid">
+        <!-- Post 1 -->
+        <article class="blog-card" data-category="writing" data-id="minto">
+          <div class="blog-card-image">🔺</div>
+          <div class="blog-card-content">
+            <span class="blog-card-category writing">Slide Writing</span>
+            <h3 class="blog-card-title">The Pyramid Principle: Barbara Minto's Framework for Clear Communication</h3>
+            <p class="blog-card-excerpt">Start with the answer. Group supporting arguments. Order them logically. Simple to describe, but mastery takes practice.</p>
+            <div class="blog-card-meta">
+              <span>📅 Feb 3, 2026</span>
+              <span>⏱️ 12 min</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Post 2 -->
+        <article class="blog-card" data-category="strategy" data-id="so-what">
+          <div class="blog-card-image">💡</div>
+          <div class="blog-card-content">
+            <span class="blog-card-category strategy">Strategy</span>
+            <h3 class="blog-card-title">Getting to the "So What": The Consultant's Most Valuable Skill</h3>
+            <p class="blog-card-excerpt">Data without insight is just noise. Learn how top consultants transform raw observations into actionable recommendations.</p>
+            <div class="blog-card-meta">
+              <span>📅 Feb 1, 2026</span>
+              <span>⏱️ 10 min</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Post 3 -->
+        <article class="blog-card" data-category="framework" data-id="issue-trees">
+          <div class="blog-card-image">🌳</div>
+          <div class="blog-card-content">
+            <span class="blog-card-category framework">Frameworks</span>
+            <h3 class="blog-card-title">Issue Trees: Breaking Down Complex Problems Like a Consultant</h3>
+            <p class="blog-card-excerpt">When faced with a complex business problem, consultants reach for issue trees. Here's how to build them effectively.</p>
+            <div class="blog-card-meta">
+              <span>📅 Jan 28, 2026</span>
+              <span>⏱️ 15 min</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Post 4 -->
+        <article class="blog-card" data-category="analysis" data-id="market-sizing">
+          <div class="blog-card-image">🎯</div>
+          <div class="blog-card-content">
+            <span class="blog-card-category analysis">Analysis</span>
+            <h3 class="blog-card-title">Market Sizing: TAM, SAM, SOM Explained with Examples</h3>
+            <p class="blog-card-excerpt">The three horizons of market sizing are essential for any business case. Learn to calculate each with confidence.</p>
+            <div class="blog-card-meta">
+              <span>📅 Jan 25, 2026</span>
+              <span>⏱️ 11 min</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Post 5 -->
+        <article class="blog-card" data-category="career" data-id="first-100-days">
+          <div class="blog-card-image">📅</div>
+          <div class="blog-card-content">
+            <span class="blog-card-category career">Career</span>
+            <h3 class="blog-card-title">The First 100 Days: A New Leader's Playbook</h3>
+            <p class="blog-card-excerpt">How to structure your first three months in a new leadership role. Learn, build, and deliver in distinct phases.</p>
+            <div class="blog-card-meta">
+              <span>📅 Jan 22, 2026</span>
+              <span>⏱️ 9 min</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Post 6 -->
+        <article class="blog-card" data-category="writing" data-id="executive-summary">
+          <div class="blog-card-image">📊</div>
+          <div class="blog-card-content">
+            <span class="blog-card-category writing">Slide Writing</span>
+            <h3 class="blog-card-title">Executive Summaries That Actually Get Read</h3>
+            <p class="blog-card-excerpt">Most executive summaries fail because they summarize instead of synthesize. Here's the McKinsey approach to doing it right.</p>
+            <div class="blog-card-meta">
+              <span>📅 Jan 18, 2026</span>
+              <span>⏱️ 7 min</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Post 7 -->
+        <article class="blog-card" data-category="strategy" data-id="pricing-strategy">
+          <div class="blog-card-image">💰</div>
+          <div class="blog-card-content">
+            <span class="blog-card-category strategy">Strategy</span>
+            <h3 class="blog-card-title">Pricing Strategy: A 9-Step Framework from Ex-Consultants</h3>
+            <p class="blog-card-excerpt">From value-based to cost-plus, psychological pricing to dynamic models. A complete guide to strategic pricing decisions.</p>
+            <div class="blog-card-meta">
+              <span>📅 Jan 15, 2026</span>
+              <span>⏱️ 14 min</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Post 8 -->
+        <article class="blog-card" data-category="framework" data-id="mece">
+          <div class="blog-card-image">🧩</div>
+          <div class="blog-card-content">
+            <span class="blog-card-category framework">Frameworks</span>
+            <h3 class="blog-card-title">MECE: The Secret to Structured Thinking</h3>
+            <p class="blog-card-excerpt">Mutually Exclusive, Collectively Exhaustive. The two words that separate amateur analysis from professional consulting.</p>
+            <div class="blog-card-meta">
+              <span>📅 Jan 12, 2026</span>
+              <span>⏱️ 8 min</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Post 9 -->
+        <article class="blog-card" data-category="analysis" data-id="competitive">
+          <div class="blog-card-image">⚔️</div>
+          <div class="blog-card-content">
+            <span class="blog-card-category analysis">Analysis</span>
+            <h3 class="blog-card-title">Competitive Analysis: A 6-Step Framework</h3>
+            <p class="blog-card-excerpt">Go beyond SWOT. Learn the structured approach top firms use to analyze competitors and find strategic advantages.</p>
+            <div class="blog-card-meta">
+              <span>📅 Jan 8, 2026</span>
+              <span>⏱️ 12 min</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </main>
+  </div>
+
+  <!-- Article Modal -->
+  <div class="article-modal hidden" id="articleModal" role="dialog" aria-modal="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="article-modal-header">
+        <button class="modal-close" id="modalClose" aria-label="Close article">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M18 6 6 18"/>
+            <path d="m6 6 12 12"/>
+          </svg>
+        </button>
+        <span class="article-modal-category" id="modalCategory">Category</span>
+        <h2 class="article-modal-title" id="modalTitle">Article Title</h2>
+        <div class="article-modal-meta">
+          <span id="modalDate">📅 Date</span>
+          <span id="modalReadTime">⏱️ Read time</span>
+        </div>
+      </div>
+      <div class="article-modal-body">
+        <article class="article-content" id="modalContent">
+          <!-- Article content loaded dynamically -->
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Article content data
+    const articlesData = {
+      'action-titles': {
+        category: 'writing',
+        categoryLabel: 'Slide Writing',
+        title: 'How to Write Slide Titles That Get Executive Attention',
+        date: 'Feb 5, 2026',
+        readTime: '8 min read',
+        content: `
+          <p>The difference between a good presentation and a great one often comes down to slide titles. In consulting, we call these "action titles"—and they're the single most important element of any slide.</p>
+
+          <h2>What is an Action Title?</h2>
+          <p>An action title communicates the main message or "so what" of a slide, not just its topic. It transforms passive viewing into active understanding.</p>
+
+          <p><strong>Weak title:</strong> "Revenue by Region"<br>
+          <strong>Strong title:</strong> "West region drives 60% of revenue growth, presenting expansion opportunity"</p>
+
+          <p>See the difference? The weak title tells you what the slide is about. The strong title tells you why it matters and what to do about it.</p>
+
+          <h2>The Formula for Great Action Titles</h2>
+          <p>A great action title typically includes three elements:</p>
+
+          <ol>
+            <li><strong>The Finding:</strong> What did you discover? (e.g., "West region drives 60% of growth")</li>
+            <li><strong>The Implication:</strong> Why does it matter? (e.g., "presenting expansion opportunity")</li>
+            <li><strong>The Direction:</strong> What should we do? (often implicit)</li>
+          </ol>
+
+          <h2>More Examples: Weak vs. Strong</h2>
+
+          <p><strong>Market Analysis Slide</strong><br>
+          ❌ Weak: "Market Size"<br>
+          ✅ Strong: "$50B addressable market with 15% CAGR offers $2B revenue potential by 2028"</p>
+
+          <p><strong>Competitive Analysis Slide</strong><br>
+          ❌ Weak: "Competitor Comparison"<br>
+          ✅ Strong: "Competitor X's premium positioning creates gap for mid-market solution"</p>
+
+          <p><strong>Financial Performance Slide</strong><br>
+          ❌ Weak: "Q3 Results"<br>
+          ✅ Strong: "Q3 EBITDA up 23% driven by cost reduction; on track for full-year target"</p>
+
+          <div class="article-tip">
+            <div class="article-tip-title">💡 Pro Tip</div>
+            <p>Write your action title first, then build the slide to support it. This ensures your slide has a clear point, not just data.</p>
+          </div>
+
+          <h2>Common Patterns in Consulting</h2>
+
+          <p>After reviewing thousands of slides from McKinsey, BCG, and Bain, we've identified these recurring patterns:</p>
+
+          <ul>
+            <li><strong>"[Finding] driven by [Driver], presenting [Opportunity/Risk]"</strong></li>
+            <li><strong>"[Metric] up/down [X]% due to [Reason]; [Implication]"</strong></li>
+            <li><strong>"[Current State] creates [Gap/Opportunity] for [Action]"</strong></li>
+            <li><strong>"[Comparison] shows [Insight], suggesting [Recommendation]"</strong></li>
+          </ul>
+
+          <h2>Practice Exercise</h2>
+
+          <p>Try improving these weak titles:</p>
+
+          <ol>
+            <li>"Customer Survey Results"</li>
+            <li>"Product Roadmap"</li>
+            <li>"Team Structure"</li>
+          </ol>
+
+          <p>(Answers in the comments—share your improvements!)</p>
+
+          <h2>The Title Quality Checklist</h2>
+
+          <p>Before finalizing any slide, ask yourself:</p>
+
+          <ul>
+            <li>✅ Does it communicate a clear point of view?</li>
+            <li>✅ Could someone understand the slide's message without reading the body?</li>
+            <li>✅ Does it answer "so what?" or "why does this matter?"</li>
+            <li>✅ Is it specific (numbers, percentages) rather than vague?</li>
+            <li>✅ Is it concise (ideally under 15 words)?</li>
+          </ul>
+
+          <h2>Putting It Into Practice</h2>
+
+          <p>Action titles aren't just a writing technique—they're a thinking technique. They force you to have a point of view. They ensure every slide contributes to your overall argument.</p>
+
+          <p>Start applying this framework to your next presentation. Write the titles first. Make them specific, insightful, and action-oriented. Your audience will thank you.</p>
+        `
+      },
+      minto: {
+        category: 'writing',
+        categoryLabel: 'Slide Writing',
+        title: 'The Pyramid Principle: Barbara Minto\'s Framework for Clear Communication',
+        date: 'Feb 3, 2026',
+        readTime: '12 min read',
+        content: `
+          <p>Barbara Minto literally wrote the book on structured communication in consulting. Developed at McKinsey in the 1970s, the Pyramid Principle remains the gold standard for presenting ideas clearly and persuasively.</p>
+
+          <h2>The Core Concept: Start With the Answer</h2>
+
+          <p>Most people present ideas the way they discovered them: chronologically. They walk the audience through their journey of discovery, building to a conclusion at the end.</p>
+
+          <p>The Pyramid Principle flips this. <strong>Start with your main recommendation or conclusion.</strong> Then support it with grouped arguments. Then support those with evidence.</p>
+
+          <h2>The Pyramid Structure</h2>
+
+          <p><strong>Top (Governing Thought):</strong> Your main recommendation or answer<br>
+          <strong>Middle (Key Line Points):</strong> 3-5 arguments that directly support the governing thought<br>
+          <strong>Base (Evidence):</strong> Data, analysis, and facts that support each key line point</p>
+
+          <h2>Vertical Logic: Why?</h2>
+
+          <p>Moving down the pyramid answers "Why?" or "How?" questions:</p>
+
+          <blockquote>
+            "We should enter the European market [GOVERNING THOUGHT]<br>
+            ↓ Why?<br>
+            Because the market is large, growing, and we have a competitive advantage [KEY LINE]<br>
+            ↓ Why is it large?<br>
+            €50B TAM with 12% CAGR... [EVIDENCE]"
+          </blockquote>
+
+          <h2>Horizontal Logic: Grouping</h2>
+
+          <p>At each level, ideas should be grouped logically using either:</p>
+
+          <ul>
+            <li><strong>Deductive reasoning:</strong> Major premise → minor premise → conclusion</li>
+            <li><strong>Inductive reasoning:</strong> Group similar ideas that support a common point (MECE)</li>
+          </ul>
+
+          <div class="article-tip">
+            <div class="article-tip-title">💡 Pro Tip</div>
+            <p>In consulting, inductive reasoning is preferred. It's easier for busy executives to absorb. Save deductive reasoning for when you need to prove something controversial.</p>
+          </div>
+
+          <h2>SCQA: The Introduction</h2>
+
+          <p>Before diving into the pyramid, set context using SCQA:</p>
+
+          <ul>
+            <li><strong>Situation:</strong> What the audience already knows and agrees with</li>
+            <li><strong>Complication:</strong> What's changed that requires action?</li>
+            <li><strong>Question:</strong> The implicit question raised by the complication</li>
+            <li><strong>Answer:</strong> Your governing thought (top of the pyramid)</li>
+          </ul>
+
+          <h2>Real-World Example</h2>
+
+          <p><strong>Situation:</strong> Our company has grown 20% annually for the past 5 years.</p>
+
+          <p><strong>Complication:</strong> However, customer acquisition costs have doubled, threatening profitability.</p>
+
+          <p><strong>Question:</strong> How can we maintain growth while restoring margins?</p>
+
+          <p><strong>Answer:</strong> We should shift from acquisition-focused growth to retention and expansion.</p>
+
+          <h3>Supporting Arguments:</h3>
+          <ol>
+            <li>Retention costs 5x less than acquisition</li>
+            <li>Existing customers have 3x higher LTV</li>
+            <li>Our NPS scores indicate expansion readiness</li>
+          </ol>
+
+          <h2>Why It Works</h2>
+
+          <p>The Pyramid Principle works because it:</p>
+
+          <ul>
+            <li>Respects your audience's time (main point first)</li>
+            <li>Makes your logic transparent and testable</li>
+            <li>Forces you to organize your thinking</li>
+            <li>Makes content skimmable</li>
+          </ul>
+
+          <h2>Common Mistakes</h2>
+
+          <ul>
+            <li>❌ Burying the lead (saving the recommendation for the end)</li>
+            <li>❌ Multiple governing thoughts (trying to say everything at once)</li>
+            <li>❌ Logical gaps (missing steps between levels)</li>
+            <li>❌ Overwhelming detail (too many supporting points)</li>
+          </ul>
+
+          <h2>Getting Started</h2>
+
+          <p>For your next presentation:</p>
+
+          <ol>
+            <li>Write your governing thought in one sentence</li>
+            <li>Identify 3-5 key supporting arguments (MECE)</li>
+            <li>Gather evidence for each argument</li>
+            <li>Write an SCQA introduction</li>
+            <li>Review: Does every element support the governing thought?</li>
+          </ol>
+
+          <p>The Pyramid Principle takes practice, but it's transformative. Master it, and your communication will stand out in any room.</p>
+        `
+      },
+      mece: {
+        category: 'framework',
+        categoryLabel: 'Frameworks',
+        title: 'MECE: The Secret to Structured Thinking',
+        date: 'Jan 12, 2026',
+        readTime: '8 min read',
+        content: `
+          <p>Two words separate amateur analysis from professional consulting: <strong>Mutually Exclusive, Collectively Exhaustive</strong>—MECE for short.</p>
+
+          <h2>What Does MECE Mean?</h2>
+
+          <p><strong>Mutually Exclusive:</strong> Categories don't overlap. Each item fits in only one bucket.</p>
+
+          <p><strong>Collectively Exhaustive:</strong> All possibilities are covered. Nothing is missed.</p>
+
+          <p>Think of a complete, organized filing system where every document has exactly one place—and every document has a place.</p>
+
+          <h2>Why MECE Matters</h2>
+
+          <p>MECE thinking eliminates two common analytical errors:</p>
+
+          <ul>
+            <li><strong>Double-counting:</strong> When categories overlap, you count the same thing twice (e.g., revenue from "enterprise" customers who are also "new")</li>
+            <li><strong>Gaps:</strong> When categories don't cover everything, you miss important areas (e.g., analyzing revenue by geography but forgetting online sales)</li>
+          </ul>
+
+          <h2>Common MECE Frameworks</h2>
+
+          <h3>1. The 2x2 Matrix</h3>
+          <p>High/Low on two dimensions creates four mutually exclusive, collectively exhaustive segments.</p>
+
+          <h3>2. Process Steps</h3>
+          <p>Sequential steps in a workflow: Step 1 → Step 2 → Step 3. Each item is in one step, all steps cover the process.</p>
+
+          <h3>3. Customer Segments</h3>
+          <p>By company size: Small, Medium, Large, Enterprise. Or by industry verticals that don't overlap.</p>
+
+          <h3>4. Time Periods>/h3>
+          <p>Q1, Q2, Q3, Q4. Or Years 1-3 of a plan. Time is naturally MECE.</p>
+
+          <h3>5. Geographic Breakdown</h3>
+          <p>North America, EMEA, APAC, LATAM. Countries don't overlap, together they cover the world.</p>
+
+          <div class="article-tip">
+            <div class="article-tip-title">💡 Pro Tip</div>
+            <p>When struggling to make something MECE, try these approaches: Process, Structure (org chart), Matrix (2x2), or Algebraic formula.</p>
+          </div>
+
+          <h2>Real Example: Revenue Analysis</h2>
+
+          <p>❌ <strong>Non-MECE:</strong> Segment by "Enterprise customers" and "New customers"<br>
+          (Overlap: Enterprise customers can be new)</p>
+
+          <p>✅ <strong>MECE:</strong> Segment by "Enterprise / SMB" AND "New / Existing"<br>
+          (Four segments: New Enterprise, Existing Enterprise, New SMB, Existing SMB)</p>
+
+          <h2>The MECE Test</h2>
+
+          <p>Before finalizing any categorization, ask:</p>
+
+          <ul>
+            <li>🧩 <strong>Mutually Exclusive?</strong> Can any item fit in more than one category?</li>
+            <li>📋 <strong>Collectively Exhaustive?</strong> Are there any items that don't fit anywhere?</li>
+          </ul>
+
+          <h2>MECE in Practice</h2>
+
+          <p>MECE isn't just for formal presentations. Use it for:</p>
+
+          <ul>
+            <li>To-do lists (grouping tasks)</li>
+            <li>Meeting agendas (structuring discussion)</li>
+            <li>Research plans (ensuring comprehensive coverage)</li>
+            <li>Problem-solving (breaking down complex issues)</li>
+          </ul>
+
+          <h2>Beyond Perfect MECE</h2>
+
+          <p>Sometimes perfect MECE is impossible or impractical. In these cases:</p>
+
+          <ul>
+            <li>Use an "Other" category (acknowledge the gap)</li>
+            <li>Prioritize the 80/20 (focus on what matters most)</li>
+            <li>Document your logic (show you thought about the boundaries)</li>
+          </ul>
+
+          <p>The goal isn't perfection—it's clarity. MECE thinking forces you to be explicit about categories, boundaries, and coverage. That clarity alone is worth the effort.</p>
+        `
+      }
+    };
+
+    // DOM elements
+    const categoryPills = document.querySelectorAll('.category-pill');
+    const blogCards = document.querySelectorAll('.blog-card');
+    const articleModal = document.getElementById('articleModal');
+    const modalClose = document.getElementById('modalClose');
+    const modalBackdrop = articleModal.querySelector('.modal-backdrop');
+
+    // Category filtering
+    categoryPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        const category = pill.dataset.category;
+        
+        // Update active pill
+        categoryPills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        
+        // Filter cards
+        blogCards.forEach(card => {
+          if (category === 'all' || card.dataset.category === category) {
+            card.classList.remove('hidden');
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+      });
+    });
+
+    // Open article modal
+    function openArticle(articleId) {
+      const data = articlesData[articleId];
+      if (!data) return;
+
+      document.getElementById('modalCategory').textContent = data.categoryLabel;
+      document.getElementById('modalCategory').className = `article-modal-category ${data.category}`;
+      document.getElementById('modalTitle').textContent = data.title;
+      document.getElementById('modalDate').textContent = `📅 ${data.date}`;
+      document.getElementById('modalReadTime').textContent = `⏱️ ${data.readTime}`;
+      document.getElementById('modalContent').innerHTML = data.content;
+
+      articleModal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Blog card clicks
+    blogCards.forEach(card => {
+      card.addEventListener('click', () => {
+        const articleId = card.dataset.id;
+        openArticle(articleId);
+      });
+    });
+
+    // Read more links
+    document.querySelectorAll('.read-more-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const articleId = link.dataset.article;
+        openArticle(articleId);
+      });
+    });
+
+    // Close modal
+    function closeModal() {
+      articleModal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    modalBackdrop.addEventListener('click', closeModal);
+
+    // Close on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !articleModal.classList.contains('hidden')) {
+        closeModal();
+      }
+    });
+
+    // Mobile menu toggle
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    mobileMenuToggle.addEventListener('click', () => {
+      mobileMenuToggle.classList.toggle('active');
+      navLinks.classList.toggle('open');
+    });
+
+    // Close mobile menu when clicking a link
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenuToggle.classList.remove('active');
+        navLinks.classList.remove('open');
+      });
+    });
+  </script>
+</body>
+</html>

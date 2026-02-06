@@ -1,0 +1,20 @@
+{
+  "id": "dtc-growth-strategy",
+  "name": "DTC Brand Growth",
+  "category": "Strategy",
+  "icon": "📈",
+  "description": "Growth strategy for direct-to-consumer brand",
+  "slideType": "Executive Summary",
+  "context": "GreenLife is a sustainable home goods DTC brand with $12M annual revenue. We've hit a growth plateau after initial rapid scaling. Customer acquisition costs have risen 40% in the past year. Need a comprehensive strategy to return to 50%+ growth while improving unit economics.",
+  "dataPoints": [
+    "Current Revenue: $12M (was growing 80%, now 15%)",
+    "CAC: $85 (up from $60 last year)",
+    "LTV: $340",
+    "Contribution Margin: 35%",
+    "Repeat Purchase Rate: 42%",
+    "Email List: 180K subscribers",
+    "Social Following: 450K combined"
+  ],
+  "targetAudience": "C-Suite",
+  "framework": "MECE"
+}
