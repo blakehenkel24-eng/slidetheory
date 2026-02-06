@@ -1,4 +1,4 @@
-import { GenerateSlideRequest, GenerateSlideResponse } from "./types";
+import { GenerateSlideRequest, GenerateSlideResponse, SlideBlueprint } from "./types";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
@@ -25,18 +25,44 @@ async function supabaseFetch(functionName: string, body?: any) {
 
 export async function generateSlide(request: GenerateSlideRequest): Promise<GenerateSlideResponse> {
   try {
+    // Step 1: Generate blueprint
     const result = await supabaseFetch("generate-slide", {
-      prompt: `Create a ${request.slideType} slide for ${request.audience} audience. Key takeaway: ${request.keyTakeaway}. Context: ${request.context}`,
+      context: request.context,
+      keyTakeaway: request.keyTakeaway,
       slideType: request.slideType,
       audience: request.audience,
+      data: request.data,
+      presentationMode: request.presentationMode,
     });
+
+    if (!result.success) {
+      throw new Error(result.error);
+    }
+
+    // Step 2: Generate image from blueprint (optional, can be async)
+    let imageData = null;
+    try {
+      const imageResult = await supabaseFetch("generate-slide-image", {
+        blueprint: result.blueprint,
+        style: 'corporate'
+      });
+      if (imageResult.success) {
+        imageData = imageResult.imageData;
+      }
+    } catch (e) {
+      console.log('Image generation optional, continuing without');
+    }
 
     return {
       success: true,
       slide: {
-        id: result.jobId,
-        content: result.content,
-        type: request.slideType,
+        id: result.slide.id,
+        title: result.slide.title,
+        content: result.slide.content,
+        layout: result.slide.layout,
+        blueprint: result.blueprint,
+        imageData: imageData,
+        generatedAt: result.generatedAt,
       },
     };
   } catch (error) {
@@ -45,6 +71,15 @@ export async function generateSlide(request: GenerateSlideRequest): Promise<Gene
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred",
     };
+  }
+}
+
+export async function generateImageFromBlueprint(blueprint: SlideBlueprint, style = 'corporate') {
+  try {
+    return await supabaseFetch("generate-slide-image", { blueprint, style });
+  } catch (error) {
+    console.error("Failed to generate image:", error);
+    throw error;
   }
 }
 
