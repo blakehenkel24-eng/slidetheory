@@ -59,7 +59,7 @@ export function SlideForm({ onSubmit, isLoading }: SlideFormProps) {
       context,
       keyTakeaway,
       presentationMode,
-      dataInput: dataInput || undefined,
+      data: dataInput || undefined,
     });
   };
 

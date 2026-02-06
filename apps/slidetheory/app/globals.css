@@ -199,3 +199,61 @@ button, a, input, textarea, select {
 .beta-badge {
   @apply inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600;
 }
+
+/* Slide content styling */
+.slide-container {
+  @apply w-full h-full p-8 bg-white text-slate-900 flex flex-col;
+}
+
+.slide-header {
+  @apply mb-4;
+}
+
+.slide-title {
+  @apply text-2xl font-bold text-slate-900 mb-1 leading-tight;
+}
+
+.slide-subtitle {
+  @apply text-sm text-slate-500;
+}
+
+.key-message-box {
+  @apply bg-blue-50 border-l-4 border-blue-500 p-4 mb-4 text-base font-medium text-slate-800;
+}
+
+.supporting-points {
+  @apply space-y-2 mb-4 list-none;
+}
+
+.supporting-points li {
+  @apply relative pl-6 text-sm text-slate-700 leading-relaxed;
+}
+
+.supporting-points li::before {
+  content: "▸";
+  @apply absolute left-0 text-blue-500 font-bold;
+}
+
+.data-highlights {
+  @apply grid grid-cols-3 gap-3 mb-4;
+}
+
+.metric {
+  @apply bg-slate-50 p-3 rounded-lg text-center;
+}
+
+.metric .number {
+  @apply block text-xl font-bold text-blue-600;
+}
+
+.metric .context {
+  @apply block text-xs text-slate-500 mt-1;
+}
+
+.callouts {
+  @apply space-y-2 mt-auto;
+}
+
+.callout {
+  @apply bg-amber-50 border border-amber-200 p-3 rounded text-sm text-slate-700;
+}
