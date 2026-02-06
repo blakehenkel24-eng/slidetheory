@@ -292,25 +292,19 @@ export function SlidePreview({ slide, isLoading, onRegenerate }: SlidePreviewPro
       </div>
 
       {/* Slide Preview */}
-      <CardContent className="flex-1 overflow-auto p-6 flex items-center justify-center bg-slate-100/30">
+      <CardContent className="flex-1 overflow-auto p-4 flex items-center justify-center bg-slate-100/30">
         <div
           style={{ transform: `scale(${zoom})`, transformOrigin: "center" }}
-          className="transition-transform duration-200 ease-out"
+          className="transition-transform duration-200 ease-out w-full h-full max-w-[1200px]"
         >
           <div
             ref={slideRef}
-            className="slide-preview-container w-[800px] bg-white rounded-lg shadow-xl overflow-hidden border border-slate-200/60"
-            style={{ aspectRatio: "16/9" }}
+            className="w-full h-full bg-white rounded-lg shadow-xl overflow-hidden border border-slate-200/60"
+            style={{ minHeight: "500px" }}
           >
-            {slide?.imageData ? (
-              <img
-                src={`data:image/png;base64,${slide.imageData}`}
-                alt="Generated slide"
-                className="w-full h-full object-contain"
-              />
-            ) : slide?.content ? (
+            {slide?.content ? (
               <div
-                className="w-full h-full overflow-auto"
+                className="w-full h-full"
                 dangerouslySetInnerHTML={{ __html: slide.content }}
               />
             ) : (

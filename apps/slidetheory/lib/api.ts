@@ -25,7 +25,7 @@ async function supabaseFetch(functionName: string, body?: any) {
 
 export async function generateSlide(request: GenerateSlideRequest): Promise<GenerateSlideResponse> {
   try {
-    // Step 1: Generate blueprint
+    // Step 1: Generate blueprint and HTML content
     const result = await supabaseFetch("generate-slide", {
       context: request.context,
       keyTakeaway: request.keyTakeaway,
@@ -39,19 +39,9 @@ export async function generateSlide(request: GenerateSlideRequest): Promise<Gene
       throw new Error(result.error);
     }
 
-    // Step 2: Generate image from blueprint (optional, can be async)
-    let imageData = null;
-    try {
-      const imageResult = await supabaseFetch("generate-slide-image", {
-        blueprint: result.blueprint,
-        style: 'corporate'
-      });
-      if (imageResult.success) {
-        imageData = imageResult.imageData;
-      }
-    } catch (e) {
-      console.log('Image generation optional, continuing without');
-    }
+    // NOTE: AI image generation disabled - causes text hallucinations
+    // HTML rendering provides crisp, accurate text
+    // Image generation can be added back later for decorative elements only
 
     return {
       success: true,
@@ -61,7 +51,6 @@ export async function generateSlide(request: GenerateSlideRequest): Promise<Gene
         content: result.slide.content,
         layout: result.slide.layout,
         blueprint: result.blueprint,
-        imageData: imageData,
         generatedAt: result.generatedAt,
       },
     };
