@@ -116,7 +116,64 @@ Before outputting, verify:
 - [ ] Layout choice matches the story type
 - [ ] Supporting points are MECE
 - [ ] Every metric has a "so what?"
-- [ ] Pyramid principle followed (top-down)`;
+- [ ] Pyramid principle followed (top-down)
+
+## OUTPUT FORMAT - JSON ONLY (with quality assessment):
+{
+  "title": "Action-oriented slide title with insight (5-12 words)",
+  "subtitle": "Supporting context if needed (optional, 10-15 words)",
+  "layout": "executive-summary | issue-tree | 2x2-matrix | waterfall | process-flow | comparison",
+  "keyMessage": "The single most important takeaway (1 sentence with so-what)",
+  "supportingPoints": [
+    "Point 1: Specific insight with data AND so-what",
+    "Point 2: Specific insight with data AND so-what",
+    "Point 3: Specific insight with data AND so-what"
+  ],
+  "dataHighlights": [
+    {"metric": "Formatted number", "context": "What it means / why it matters"}
+  ],
+  "chartRecommendation": {
+    "type": "bar | line | pie | waterfall | none",
+    "title": "Chart insight (not just description)",
+    "data": "What data to show"
+  },
+  "visualElements": {
+    "calloutBoxes": ["Key insight 1", "Key insight 2"],
+    "icons": ["relevant metaphorical icons"]
+  },
+  "structureRationale": "Why this layout was chosen for this content",
+  "imagePrompt": "Detailed prompt for image generation",
+  "qualityAssessment": {
+    "actionTitle": 1-4,
+    "meceStructure": 1-4,
+    "pyramidPrinciple": 1-4,
+    "dataQuality": 1-4,
+    "soWhat": 1-4,
+    "visualClarity": 1-4,
+    "overall": 1-4,
+    "isExecutiveReady": true/false,
+    "strengths": ["What makes this excellent"],
+    "improvements": ["What could be better"]
+  }
+}
+
+## QUALITY SCORING (Self-Assessment)
+Rate each dimension 1-4:
+- 4 = Excellent (Exceeds consulting standards)
+- 3 = Good (Meets standards)
+- 2 = Fair (Below standards, needs work)
+- 1 = Poor (Unacceptable)
+
+Dimensions to score:
+1. actionTitle: Is it insightful and action-oriented?
+2. meceStructure: Are categories mutually exclusive, collectively exhaustive?
+3. pyramidPrinciple: Is it structured top-down?
+4. dataQuality: Is data supported and properly formatted?
+5. soWhat: Does every point explain why it matters?
+6. visualClarity: Would this be clean and professional?
+
+Overall = average of 6 dimensions
+isExecutiveReady = overall >= 3.5 AND no dimension below 3`;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -197,6 +254,20 @@ serve(async (req) => {
     // STEP 3: Generate slide content from blueprint
     const slideContent = renderSlideFromBlueprint(blueprint, presentationMode);
 
+    // Calculate quality assessment if AI didn't provide it
+    const qualityAssessment = blueprint.qualityAssessment || {
+      actionTitle: 3,
+      meceStructure: 3,
+      pyramidPrinciple: 3,
+      dataQuality: 3,
+      soWhat: 3,
+      visualClarity: 3,
+      overall: 3,
+      isExecutiveReady: false,
+      strengths: ["Solid foundation"],
+      improvements: ["Review for refinements"]
+    };
+
     return new Response(
       JSON.stringify({
         success: true,
@@ -209,6 +280,7 @@ serve(async (req) => {
           layout: blueprint.layout,
           imagePrompt: blueprint.imagePrompt,
           type: slideType,
+          qualityAssessment,
         },
         generatedAt: new Date().toISOString(),
       }),

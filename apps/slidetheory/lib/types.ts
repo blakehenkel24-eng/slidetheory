@@ -61,6 +61,20 @@ export interface SlideData {
   blueprint?: SlideBlueprint;
   imageData?: string;
   generatedAt?: string;
+  qualityAssessment?: {
+    overall: number;
+    dimensions: {
+      actionTitle: number;
+      meceStructure: number;
+      pyramidPrinciple: number;
+      dataQuality: number;
+      soWhat: number;
+      visualClarity: number;
+    };
+    isExecutiveReady: boolean;
+    strengths: string[];
+    improvements: string[];
+  };
 }
 
 export interface GenerateSlideResponse {

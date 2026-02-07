@@ -123,9 +123,29 @@ export function SlideForm({ onSubmit, isLoading }: SlideFormProps) {
             <p className="text-xs text-slate-500 leading-relaxed">
               The single most important thing your audience should remember.
             </p>
+            
+            {/* Action Title Tips - Collapsible */}
+            <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
+              <p className="text-xs font-medium text-slate-700 mb-2 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
+                Tip: Write an action title, not a description
+              </p>
+              <div className="space-y-1.5 text-xs">
+                <p className="text-slate-500">
+                  <span className="text-red-500 font-medium">✗</span> "Revenue Analysis" (descriptive)
+                </p>
+                <p className="text-slate-700">
+                  <span className="text-emerald-500 font-medium">✓</span> "Revenue grew 15% driven by digital transformation" (action)
+                </p>
+              </div>
+              <p className="text-xs text-slate-400 mt-2 italic">
+                Formula: [Subject] + [Action] + [Result/Driver]
+              </p>
+            </div>
+            
             <Textarea
               id="keyTakeaway"
-              placeholder="e.g., 'We need to enter the European market by Q3 to capture first-mover advantage'"
+              placeholder="e.g., 'Revenue growth accelerated to 15% driven by digital transformation'"
               value={keyTakeaway}
               onChange={(e) => setKeyTakeaway(e.target.value)}
               className="min-h-[80px] bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 resize-none focus:border-blue-500 focus:ring-blue-500/20 transition-all"
