@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GTM Control Center | SlideTheory</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f0f23;
+      color: #e4e4e7;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #27272a;
+    }
+    
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .subtitle {
+      color: #71717a;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    
+    .time {
+      color: #a1a1aa;
+      font-size: 14px;
+      font-family: monospace;
+    }
+    
+    .status-bar {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    
+    .status-pill.success {
+      background: rgba(34, 197, 94, 0.1);
+      color: #22c55e;
+    }
+    
+    .status-pill.pending {
+      background: rgba(161, 161, 170, 0.1);
+      color: #a1a1aa;
+    }
+    
+    .status-pill.failed {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+    
+    .status-pill.running {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    
+    .job-card {
+      background: #18181b;
+      border: 2px solid #27272a;
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .job-card:hover {
+      border-color: #3f3f46;
+      transform: translateY(-2px);
+    }
+    
+    .job-card.completed {
+      border-left: 4px solid #22c55e;
+    }
+    
+    .job-card.failed {
+      border-left: 4px solid #ef4444;
+      background: rgba(239, 68, 68, 0.05);
+    }
+    
+    .job-card.running {
+      border-left: 4px solid #3b82f6;
+    }
+    
+    .job-card.pending {
+      border-left: 4px solid #71717a;
+    }
+    
+    .job-card.paused {
+      border-left: 4px solid #f59e0b;
+      opacity: 0.7;
+    }
+    
+    .job-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .job-icon {
+      font-size: 24px;
+    }
+    
+    .job-name {
+      font-weight: 600;
+      font-size: 15px;
+    }
+    
+    .job-status {
+      margin-left: auto;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+    
+    .job-status.completed {
+      background: rgba(34, 197, 94, 0.1);
+      color: #22c55e;
+    }
+    
+    .job-status.failed {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+    
+    .job-status.running {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+    }
+    
+    .job-status.pending {
+      background: rgba(113, 113, 122, 0.1);
+      color: #71717a;
+    }
+    
+    .job-desc {
+      color: #a1a1aa;
+      font-size: 13px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    
+    .job-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 12px;
+      color: #71717a;
+    }
+    
+    .job-meta-row {
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .job-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    
+    .job-card:hover .job-actions {
+      opacity: 1;
+    }
+    
+    .btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #2563eb;
+    }
+    
+    .btn-secondary {
+      background: #27272a;
+      color: #e4e4e7;
+    }
+    
+    .btn-secondary:hover {
+      background: #3f3f46;
+    }
+    
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+    
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+    
+    .recent-section {
+      background: #18181b;
+      border-radius: 12px;
+      padding: 24px;
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .output-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .output-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: #27272a;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .output-item:hover {
+      background: #3f3f46;
+    }
+    
+    .output-icon {
+      color: #71717a;
+    }
+    
+    .output-path {
+      color: #a1a1aa;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    
+    .output-time {
+      margin-left: auto;
+      color: #71717a;
+      font-size: 11px;
+    }
+    
+    .alert-banner {
+      display: none;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .alert-banner.show {
+      display: flex;
+    }
+    
+    .alert-icon {
+      font-size: 20px;
+    }
+    
+    .alert-text {
+      flex: 1;
+    }
+    
+    .alert-title {
+      font-weight: 600;
+      color: #ef4444;
+    }
+    
+    .alert-desc {
+      font-size: 13px;
+      color: #a1a1aa;
+      margin-top: 4px;
+    }
+    
+    .global-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #27272a;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal.show {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: #18181b;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow: auto;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      color: #71717a;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    
+    .logs-content {
+      background: #0f0f23;
+      border-radius: 8px;
+      padding: 16px;
+      font-family: monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #a1a1aa;
+      white-space: pre-wrap;
+    }
+    
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #3b82f6;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #27272a;
+      text-align: center;
+      color: #52525b;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>🚀 GTM Control Center</h1>
+        <div class="subtitle">SlideTheory Autonomous Engine</div>
+      </div>
+      <div class="time" id="current-time">--:-- CST</div>
+    </header>
+    
+    <div class="alert-banner" id="alert-banner">
+      <span class="alert-icon">🔴</span>
+      <div class="alert-text">
+        <div class="alert-title">Job Failed: Content Generation</div>
+        <div class="alert-desc">Kimi API timeout after 60s. Click to view logs.</div>
+      </div>
+      <button class="btn btn-secondary">View</button>
+    </div>
+    
+    <div class="status-bar" id="status-bar">
+      <div class="status-pill success">
+        ✅ <span id="completed-count">0</span> Completed
+      </div>
+      <div class="status-pill pending">
+        ⏳ <span id="pending-count">0</span> Pending
+      </div>
+      <div class="status-pill running" style="display:none;" id="running-pill">
+        🔄 <span id="running-count">0</span> Running
+      </div>
+      <div class="status-pill failed" style="display:none;" id="failed-pill">
+        ❌ <span id="failed-count">0</span> Failed
+      </div>
+    </div>
+    
+    <div class="grid" id="jobs-grid">
+      <!-- Jobs will be populated by JS -->
+    </div>
+    
+    <div class="recent-section">
+      <div class="section-header">
+        <h3 class="section-title">📄 Recent Outputs</h3>
+        <button class="btn btn-secondary" onclick="viewArchive()">View Archive</button>
+      </div>
+      <div class="output-list" id="output-list">
+        <!-- Outputs populated by JS -->
+      </div>
+    </div>
+    
+    <div class="global-actions">
+      <button class="btn btn-primary" onclick="refreshStatus()">🔄 Refresh</button>
+      <button class="btn btn-secondary" onclick="viewLogs()">📋 View Logs</button>
+      <button class="btn btn-danger" onclick="pauseAll()">⏸️ Pause All</button>
+      <button class="btn btn-secondary" onclick="viewSettings()">⚙️ Settings</button>
+    </div>
+    
+    <footer>
+      GTM Automation Engine • CST Timezone • Silent Success, Noisy Failure
+    </footer>
+  </div>
+  
+  <!-- Modal for logs -->
+  <div class="modal" id="logs-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">📋 Job Logs</h3>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div class="logs-content" id="logs-content">Loading...</div>
+    </div>
+  </div>
+  
+  <script>
+    // Job definitions
+    const jobs = [
+      { id: 'market-intel', name: 'Market Intel', desc: 'LinkedIn trends, competitor watch, industry news', icon: '☀️', color: '#f59e0b', cron: '0 8 * * *' },
+      { id: 'content', name: 'Content', desc: 'Blog drafts, social posts, email newsletter', icon: '✍️', color: '#3b82f6', cron: '0 10 * * *' },
+      { id: 'prospect-research', name: 'Prospect Research', desc: 'Lead qualification, outreach prep', icon: '🎯', color: '#8b5cf6', cron: '0 14 * * *' },
+      { id: 'analytics', name: 'Analytics', desc: 'Metrics report, funnel analysis', icon: '📊', color: '#10b981', cron: '0 18 * * *' },
+      { id: 'health-check', name: 'Health Check', desc: 'System status, API limits, storage', icon: '🏥', color: '#ef4444', cron: '0 21 * * *' },
+      { id: 'weekly-strategy', name: 'Weekly Strategy', desc: 'Strategy review and recommendations', icon: '📅', color: '#6366f1', cron: '0 9 * * 5' },
+    ];
+    
+    // Mock state (in real implementation, fetch from API)
+    let jobState = {};
+    
+    function getNextRun(cron) {
+      const now = new Date();
+      const hour = parseInt(cron.split(' ')[1]);
+      const minute = parseInt(cron.split(' ')[0]);
+      
+      // Simple CST calculation (UTC-6)
+      const next = new Date(now);
+      next.setHours(hour);
+      next.setMinutes(minute);
+      next.setSeconds(0);
+      
+      if (next <= now) {
+        next.setDate(next.getDate() + 1);
+      }
+      
+      return next.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false,
+        timeZone: 'America/Chicago'
+      }) + ' CST';
+    }
+    
+    function getStatus(job) {
+      // Mock logic - in real impl, check actual state
+      const hour = new Date().getHours();
+      const jobHour = parseInt(job.cron.split(' ')[1]);
+      
+      if (hour >= jobHour + 1) return 'completed';
+      if (hour >= jobHour) return 'running';
+      return 'pending';
+    }
+    
+    function renderJobs() {
+      const grid = document.getElementById('jobs-grid');
+      const now = new Date();
+      const hour = now.getHours();
+      
+      let completed = 0, pending = 0, running = 0, failed = 0;
+      
+      grid.innerHTML = jobs.map(job => {
+        const jobHour = parseInt(job.cron.split(' ')[1]);
+        let status, statusText, statusClass, metaText;
+        
+        // Simulate realistic state based on time
+        if (job.id === 'weekly-strategy') {
+          status = now.getDay() === 5 && hour >= 9 ? 'completed' : 'pending';
+          statusText = status === 'completed' ? 'Done' : 'Fri 09:00';
+        } else if (hour >= jobHour + 1) {
+          status = 'completed';
+          statusText = 'Done';
+          completed++;
+        } else if (hour >= jobHour) {
+          status = hour === jobHour ? 'running' : 'completed';
+          statusText = hour === jobHour ? 'Running' : 'Done';
+          if (status === 'running') running++;
+          else completed++;
+        } else {
+          status = 'pending';
+          statusText = getNextRun(job.cron);
+          pending++;
+        }
+        
+        metaText = status === 'completed' 
+          ? `3 outputs • ${jobHour.toString().padStart(2, '0')}:02 CST`
+          : status === 'running'
+          ? 'Started just now'
+          : `Scheduled: ${statusText}`;
+        
+        return `
+          <div class="job-card ${status}" data-job="${job.id}">
+            <div class="job-header">
+              <span class="job-icon">${job.icon}</span>
+              <span class="job-name">${job.name}</span>
+              <span class="job-status ${status}">${statusText}</span>
+            </div>
+            <div class="job-desc">${job.desc}</div>
+            <div class="job-meta">
+              <div class="job-meta-row">
+                <span>Schedule</span>
+                <span>${jobHour.toString().padStart(2, '0')}:00 CST</span>
+              </div>
+              <div class="job-meta-row">
+                <span>Status</span>
+                <span>${metaText}</span>
+              </div>
+            </div>
+            <div class="job-actions">
+              <button class="btn btn-primary" onclick="runJob('${job.id}', event)">▶️ Run Now</button>
+              <button class="btn btn-secondary" onclick="viewJobLogs('${job.id}', event)">📋 Logs</button>
+              <button class="btn btn-secondary" onclick="pauseJob('${job.id}', event)">⏸️ Pause</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      // Update counts
+      document.getElementById('completed-count').textContent = completed;
+      document.getElementById('pending-count').textContent = pending;
+      document.getElementById('running-count').textContent = running;
+      document.getElementById('failed-count').textContent = failed;
+      
+      document.getElementById('running-pill').style.display = running > 0 ? 'flex' : 'none';
+      document.getElementById('failed-pill').style.display = failed > 0 ? 'flex' : 'none';
+    }
+    
+    function renderOutputs() {
+      const outputs = [
+        { path: '/gtm/2026-02-09/market-intel/linkedin-trends.md', time: '2h ago' },
+        { path: '/gtm/2026-02-09/market-intel/competitor-watch.md', time: '2h ago' },
+        { path: '/gtm/2026-02-09/market-intel/industry-news.md', time: '2h ago' },
+        { path: '/gtm/2026-02-09/content/blog-draft.md', time: 'Yesterday' },
+      ];
+      
+      document.getElementById('output-list').innerHTML = outputs.map(o => `
+        <div class="output-item" onclick="viewOutput('${o.path}')">
+          <span class="output-icon">📄</span>
+          <span class="output-path">${o.path}</span>
+          <span class="output-time">${o.time}</span>
+        </div>
+      `).join('');
+    }
+    
+    function updateTime() {
+      const now = new Date();
+      document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+        timeZone: 'America/Chicago'
+      }) + ' CST';
+    }
+    
+    // Actions
+    function runJob(jobId, event) {
+      event.stopPropagation();
+      alert(`Running ${jobId}... (would trigger actual job)`);
+    }
+    
+    function viewJobLogs(jobId, event) {
+      event.stopPropagation();
+      document.getElementById('logs-content').textContent = `
+[2026-02-09T08:00:02Z] Starting ${jobId} job...
+[2026-02-09T08:00:03Z] Loading configuration
+[2026-02-09T08:00:04Z] Fetching data from API
+[2026-02-09T08:02:15Z] Processing results
+[2026-02-09T08:02:30Z] Generated 3 outputs
+[2026-02-09T08:02:31Z] Job completed successfully
+      `.trim();
+      document.getElementById('logs-modal').classList.add('show');
+    }
+    
+    function pauseJob(jobId, event) {
+      event.stopPropagation();
+      if (confirm(`Pause ${jobId}? It won't run until resumed.`)) {
+        alert(`${jobId} paused`);
+      }
+    }
+    
+    function closeModal() {
+      document.getElementById('logs-modal').classList.remove('show');
+    }
+    
+    function viewLogs() {
+      document.getElementById('logs-content').textContent = 'All logs would appear here...';
+      document.getElementById('logs-modal').classList.add('show');
+    }
+    
+    function viewArchive() {
+      alert('Archive browser would open here');
+    }
+    
+    function viewOutput(path) {
+      alert(`Viewing ${path}`);
+    }
+    
+    function refreshStatus() {
+      renderJobs();
+      renderOutputs();
+    }
+    
+    function pauseAll() {
+      if (confirm('Pause ALL jobs? This will stop the entire GTM engine.')) {
+        alert('All jobs paused');
+      }
+    }
+    
+    function viewSettings() {
+      alert('Settings panel would open here');
+    }
+    
+    // Init
+    setInterval(updateTime, 1000);
+    updateTime();
+    renderJobs();
+    renderOutputs();
+  </script>
+</body>
+</html>
