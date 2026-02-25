@@ -1,20 +1,26 @@
-// Supabase Edge Function: Generate structured slide blueprint
-// Uses McKinsey/BCG/Bain consulting standards
+// Supabase Edge Function: Generate structured slide blueprint WITH RAG
+// Uses McKinsey/BCG/Bain consulting standards + internal reference retrieval
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0';
 
 const SYSTEM_PROMPT = `You are an elite strategy consultant who spent 20 years at McKinsey, Bain, and BCG.
 
 ## YOUR TASK
 Transform raw context into a structured, consultant-quality slide blueprint that follows industry best practices.
 
+## REFERENCE EXAMPLES (USE THESE AS STYLE GUIDE)
+You will be provided with examples of high-quality consulting slides. Use them to understand:
+- How action titles are written
+- How layouts are chosen for different content types
+- The tone and language used
+- How data is presented with insights
+
 ## THE PYRAMID PRINCIPLE (MANDATORY)
 Structure every slide top-down:
 1. MAIN POINT (Title): The key takeaway/insight
-2. KEY ARGUMENTS: 2-4 supporting pillars (MECE - mutually exclusive, collectively exhaustive)
+2. KEY ARGUMENTS: 2-4 supporting pillars (MECE)
 3. SUPPORTING DATA: Evidence for each argument
-
-Every element must support the element above it. Nothing in the title should not be in the body.
 
 ## ACTION TITLES (CRITICAL)
 The title MUST be action-oriented, NOT descriptive.
@@ -23,157 +29,30 @@ BAD: "Revenue Analysis" or "Market Overview"
 GOOD: "Revenue growth accelerated to 15% driven by digital transformation"
 
 Formula: [Subject] + [Action/Change] + [Key Driver/Result]
-- Must be a complete sentence
-- Must articulate the "so what?"
-- Must include the insight, not just the topic
-- 5-12 words ideally
-- Answers: "What should the audience know/understand/do?"
 
 ## SLIDE LAYOUT SELECTION
 Choose the layout that best fits the story:
 
-EXECUTIVE-SUMMARY: High-level overview, 3-4 key bullets, big picture chart
-- Use for: Opening slides, summaries, recommendations
-
+EXECUTIVE-SUMMARY: High-level overview, 3-4 key bullets
 ISSUE-TREE: Hierarchical breakdown of complex problems
-- Use for: Problem diagnosis, root cause analysis
-- Structure: Root problem → 2-4 branches → sub-branches
-
 2X2-MATRIX: Compare options on two dimensions
-- Use for: Strategic positioning, portfolio analysis
-- Structure: X-axis, Y-axis, 4 quadrants with implications
-
 WATERFALL: Show progression or breakdown
-- Use for: Financial bridges, variance explanations
-- Structure: Start value → steps → end value
-
 COMPARISON: Side-by-side option analysis
-- Use for: Option evaluation, vendor selection
-- Structure: Columns for options, rows for criteria
-
 PROCESS-FLOW: Step-by-step workflows
-- Use for: Operating models, implementation plans
-- Structure: Sequential steps with arrows
-
-## MECE PRINCIPLE (MANDATORY)
-All categories must be:
-- Mutually Exclusive: No overlap between categories
-- Collectively Exhaustive: No gaps, covers all possibilities
-
-Example of MECE categories:
-✓ By customer segment, by channel, by geography
-✗ By product AND by geography (products exist in multiple geos)
-
-## DATA STANDARDS
-1. Lead with the insight, not the data
-2. Format numbers consistently (K/M/B for large numbers)
-3. Show "so what?" for every metric
-4. Use percentages with base sizes
-5. Always include sources
 
 ## OUTPUT FORMAT - JSON ONLY:
 {
   "title": "Action-oriented slide title with insight (5-12 words)",
-  "subtitle": "Supporting context if needed (optional, 10-15 words)",
+  "subtitle": "Supporting context if needed",
   "layout": "executive-summary | issue-tree | 2x2-matrix | waterfall | process-flow | comparison",
-  "keyMessage": "The single most important takeaway (1 sentence with so-what)",
-  "supportingPoints": [
-    "Point 1: Specific insight with data AND so-what",
-    "Point 2: Specific insight with data AND so-what",
-    "Point 3: Specific insight with data AND so-what"
-  ],
-  "dataHighlights": [
-    {"metric": "Formatted number", "context": "What it means / why it matters"}
-  ],
-  "chartRecommendation": {
-    "type": "bar | line | pie | waterfall | none",
-    "title": "Chart insight (not just description)",
-    "data": "What data to show"
-  },
-  "visualElements": {
-    "calloutBoxes": ["Key insight 1", "Key insight 2"],
-    "icons": ["relevant metaphorical icons"]
-  },
-  "structureRationale": "Why this layout was chosen for this content",
+  "keyMessage": "The single most important takeaway",
+  "supportingPoints": ["Point 1: Insight with data AND so-what", "Point 2..."],
+  "dataHighlights": [{"metric": "Number", "context": "What it means"}],
+  "chartRecommendation": {"type": "bar", "title": "Chart insight", "data": "What to show"},
+  "visualElements": {"calloutBoxes": ["Key insight"], "icons": ["metaphor"]},
+  "structureRationale": "Why this layout was chosen",
   "imagePrompt": "Detailed prompt for image generation"
-}
-
-## CONSULTING LANGUAGE STANDARDS
-Use: Accelerate, capture, leverage, unlock, drive, strategic imperative, evidence shows
-Avoid: Try, attempt, maybe, obviously, very, really (weak words)
-
-## CRITICAL RULES
-1. SO WHAT? Every point must answer this.
-2. No descriptive titles - only action titles.
-3. MECE structure throughout.
-4. Data without insight is worthless - always explain what it means.
-5. Be specific and defensible - no generic business speak.
-6. Create NEW insights from the context, don't just reword it.
-
-## QUALITY CHECK
-Before outputting, verify:
-- [ ] Title is action-oriented with clear insight
-- [ ] Layout choice matches the story type
-- [ ] Supporting points are MECE
-- [ ] Every metric has a "so what?"
-- [ ] Pyramid principle followed (top-down)
-
-## OUTPUT FORMAT - JSON ONLY (with quality assessment):
-{
-  "title": "Action-oriented slide title with insight (5-12 words)",
-  "subtitle": "Supporting context if needed (optional, 10-15 words)",
-  "layout": "executive-summary | issue-tree | 2x2-matrix | waterfall | process-flow | comparison",
-  "keyMessage": "The single most important takeaway (1 sentence with so-what)",
-  "supportingPoints": [
-    "Point 1: Specific insight with data AND so-what",
-    "Point 2: Specific insight with data AND so-what",
-    "Point 3: Specific insight with data AND so-what"
-  ],
-  "dataHighlights": [
-    {"metric": "Formatted number", "context": "What it means / why it matters"}
-  ],
-  "chartRecommendation": {
-    "type": "bar | line | pie | waterfall | none",
-    "title": "Chart insight (not just description)",
-    "data": "What data to show"
-  },
-  "visualElements": {
-    "calloutBoxes": ["Key insight 1", "Key insight 2"],
-    "icons": ["relevant metaphorical icons"]
-  },
-  "structureRationale": "Why this layout was chosen for this content",
-  "imagePrompt": "Detailed prompt for image generation",
-  "qualityAssessment": {
-    "actionTitle": 1-4,
-    "meceStructure": 1-4,
-    "pyramidPrinciple": 1-4,
-    "dataQuality": 1-4,
-    "soWhat": 1-4,
-    "visualClarity": 1-4,
-    "overall": 1-4,
-    "isExecutiveReady": true/false,
-    "strengths": ["What makes this excellent"],
-    "improvements": ["What could be better"]
-  }
-}
-
-## QUALITY SCORING (Self-Assessment)
-Rate each dimension 1-4:
-- 4 = Excellent (Exceeds consulting standards)
-- 3 = Good (Meets standards)
-- 2 = Fair (Below standards, needs work)
-- 1 = Poor (Unacceptable)
-
-Dimensions to score:
-1. actionTitle: Is it insightful and action-oriented?
-2. meceStructure: Are categories mutually exclusive, collectively exhaustive?
-3. pyramidPrinciple: Is it structured top-down?
-4. dataQuality: Is data supported and properly formatted?
-5. soWhat: Does every point explain why it matters?
-6. visualClarity: Would this be clean and professional?
-
-Overall = average of 6 dimensions
-isExecutiveReady = overall >= 3.5 AND no dimension below 3`;
+}`;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -193,7 +72,8 @@ serve(async (req) => {
       slideType = 'auto-select', 
       audience = 'auto-select',
       data = '',
-      presentationMode = 'read'
+      presentationMode = 'read',
+      useRag = true  // NEW: Enable RAG by default
     } = await req.json();
 
     if (!context || !keyTakeaway) {
@@ -204,15 +84,87 @@ serve(async (req) => {
     }
 
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    
     if (!OPENAI_API_KEY) {
       throw new Error('OPENAI_API_KEY not configured');
+    }
+
+    // Initialize Supabase client for RAG
+    let referenceExamples = [];
+    
+    if (useRag && SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+      try {
+        const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+        
+        // Generate embedding for the query
+        const embeddingResponse = await fetch('https://api.openai.com/v1/embeddings', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'text-embedding-3-large',  // Use large model
+            input: `${keyTakeaway} ${context}`.substring(0, 8000),
+          })
+        });
+
+        if (embeddingResponse.ok) {
+          const embeddingData = await embeddingResponse.json();
+          const queryEmbedding = embeddingData.data?.[0]?.embedding;
+          
+          if (queryEmbedding) {
+            // Call search_internal_slides RPC
+            const { data: slides, error } = await supabase.rpc('search_internal_slides', {
+              query_embedding: queryEmbedding,
+              match_threshold: 0.5,
+              match_count: 3,
+              filter_slide_type: slideType !== 'auto-select' ? slideType : null
+            });
+            
+            if (!error && slides && slides.length > 0) {
+              referenceExamples = slides;
+              console.log(`RAG: Found ${slides.length} reference examples`);
+            }
+          }
+        }
+      } catch (ragError) {
+        console.error('RAG retrieval error:', ragError);
+        // Continue without RAG if it fails
+      }
+    }
+
+    // Build the prompt with reference examples if available
+    let promptWithExamples = '';
+    
+    if (referenceExamples.length > 0) {
+      promptWithExamples = `## REFERENCE EXAMPLES (Study these for style and structure):\n\n`;
+      referenceExamples.forEach((ex, i) => {
+        promptWithExamples += `--- Example ${i + 1} ---\n`;
+        promptWithExamples += `Title: ${ex.title}\n`;
+        promptWithExamples += `Type: ${ex.slide_type}\n`;
+        promptWithExamples += `Layout Pattern: ${JSON.stringify(ex.layout_pattern)}\n`;
+        promptWithExamples += `Content: ${ex.extracted_text?.substring(0, 500) || ''}...\n\n`;
+      });
+      promptWithExamples += `--- END EXAMPLES ---\n\n`;
     }
 
     // STEP 1: Analyze content to recommend best layout
     const layoutRecommendation = recommendLayout(context, keyTakeaway, data, slideType);
 
     // STEP 2: Create structured blueprint with OpenAI
-    const blueprintPrompt = buildBlueprintPrompt(context, keyTakeaway, slideType, audience, data, presentationMode, layoutRecommendation);
+    const blueprintPrompt = buildBlueprintPrompt(
+      context, 
+      keyTakeaway, 
+      slideType, 
+      audience, 
+      data, 
+      presentationMode, 
+      layoutRecommendation,
+      promptWithExamples
+    );
     
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -254,7 +206,6 @@ serve(async (req) => {
     // STEP 3: Generate slide content from blueprint
     const slideContent = renderSlideFromBlueprint(blueprint, presentationMode);
 
-    // Calculate quality assessment if AI didn't provide it
     const qualityAssessment = blueprint.qualityAssessment || {
       actionTitle: 3,
       meceStructure: 3,
@@ -281,6 +232,11 @@ serve(async (req) => {
           imagePrompt: blueprint.imagePrompt,
           type: slideType,
           qualityAssessment,
+        },
+        rag: {
+          used: referenceExamples.length > 0,
+          examplesFound: referenceExamples.length,
+          exampleTitles: referenceExamples.map(ex => ex.title)
         },
         generatedAt: new Date().toISOString(),
       }),
@@ -311,12 +267,10 @@ serve(async (req) => {
 });
 
 function recommendLayout(context: string, keyTakeaway: string, data: string, slideType: string): string {
-  // Logic to recommend best layout based on content
   const text = (context + ' ' + keyTakeaway + ' ' + data).toLowerCase();
   
   if (slideType !== 'auto-select') return slideType;
   
-  // Check for patterns that suggest specific layouts
   if (text.includes('compared to') || text.includes('versus') || text.includes('vs')) {
     return 'comparison';
   }
@@ -324,7 +278,7 @@ function recommendLayout(context: string, keyTakeaway: string, data: string, sli
     return 'issue-tree';
   }
   if (text.includes('over time') || text.includes('trend') || text.includes('growth') || text.includes('decline')) {
-    return 'executive-summary'; // Usually with a trend chart
+    return 'executive-summary';
   }
   if (text.includes('process') || text.includes('steps') || text.includes('workflow')) {
     return 'process-flow';
@@ -336,11 +290,21 @@ function recommendLayout(context: string, keyTakeaway: string, data: string, sli
     return 'waterfall';
   }
   
-  return 'executive-summary'; // Default
+  return 'executive-summary';
 }
 
-function buildBlueprintPrompt(context: string, keyTakeaway: string, slideType: string, audience: string, data: string, mode: string, recommendedLayout: string): string {
-  return `Create a consultant-quality slide blueprint from this context:
+function buildBlueprintPrompt(
+  context: string, 
+  keyTakeaway: string, 
+  slideType: string, 
+  audience: string, 
+  data: string, 
+  mode: string, 
+  recommendedLayout: string,
+  examples: string
+): string {
+  return `${examples}
+Create a consultant-quality slide blueprint from this context:
 
 ## USER'S KEY TAKEAWAY (MUST BE THE FOCUS):
 ${keyTakeaway}
@@ -355,15 +319,14 @@ ${data || 'None provided'}
 ${audience}
 
 ## PRESENTATION MODE:
-${mode} (${mode === 'presentation' ? 'Minimal text, bullet points for live presenting' : 'Detailed, self-explanatory for reading'})
+${mode}
 
 ## RECOMMENDED LAYOUT:
 ${recommendedLayout}
 ${recommendedLayout !== slideType && slideType !== 'auto-select' ? `(User prefers: ${slideType})` : ''}
 
 ---
-
-Create a JSON blueprint following the system instructions.
+Create a JSON blueprint following the system instructions. Study the reference examples above for style guidance.
 
 CRITICAL:
 1. The TITLE must be an action title with insight (not descriptive)
@@ -390,7 +353,6 @@ function renderSlideFromBlueprint(blueprint: any, mode: string): string {
   const isPresentation = mode === 'presentation';
   const layout = blueprint.layout || 'executive-summary';
   
-  // Layout-specific rendering
   switch (layout) {
     case 'issue-tree':
       return renderIssueTree(blueprint, isPresentation);
@@ -409,8 +371,6 @@ function renderSlideFromBlueprint(blueprint: any, mode: string): string {
 
 function renderExecutiveSummary(blueprint: any, isPresentation: boolean): string {
   let html = `<div class="slide-container executive-summary">`;
-  
-  // Header with action title
   html += `<div class="slide-header">`;
   html += `<h1 class="slide-title">${blueprint.title}</h1>`;
   if (blueprint.subtitle) {
@@ -418,12 +378,10 @@ function renderExecutiveSummary(blueprint: any, isPresentation: boolean): string
   }
   html += `</div>`;
   
-  // Key message box (prominent)
   if (blueprint.keyMessage) {
     html += `<div class="key-message-box">${blueprint.keyMessage}</div>`;
   }
   
-  // Supporting points
   if (blueprint.supportingPoints?.length > 0) {
     html += `<div class="supporting-section">`;
     html += `<h3 class="section-label">Key Insights:</h3>`;
@@ -434,170 +392,32 @@ function renderExecutiveSummary(blueprint: any, isPresentation: boolean): string
     html += `</ul></div>`;
   }
   
-  // Data highlights in grid
-  if (blueprint.dataHighlights?.length > 0) {
-    html += `<div class="data-section">`;
-    html += `<h3 class="section-label">Key Metrics:</h3>`;
-    html += `<div class="data-highlights">`;
-    blueprint.dataHighlights.forEach((item: any) => {
-      html += `<div class="metric">`;
-      html += `<span class="number">${item.metric}</span>`;
-      html += `<span class="context">${item.context}</span>`;
-      html += `</div>`;
-    });
-    html += `</div></div>`;
-  }
-  
-  // Callout boxes for key insights
-  if (blueprint.visualElements?.calloutBoxes?.length > 0) {
-    html += `<div class="callouts-section">`;
-    blueprint.visualElements.calloutBoxes.forEach((callout: string) => {
-      html += `<div class="callout">${callout}</div>`;
-    });
-    html += `</div>`;
-  }
-  
-  // Layout rationale (for transparency)
-  if (blueprint.structureRationale) {
-    html += `<div class="rationale-note">${blueprint.structureRationale}</div>`;
-  }
-  
   html += `</div>`;
-  
   return html;
 }
 
 function renderIssueTree(blueprint: any, isPresentation: boolean): string {
   let html = `<div class="slide-container issue-tree">`;
-  
-  html += `<div class="slide-header">`;
   html += `<h1 class="slide-title">${blueprint.title}</h1>`;
-  html += `</div>`;
-  
   if (blueprint.keyMessage) {
     html += `<div class="key-message-box">${blueprint.keyMessage}</div>`;
   }
-  
-  // Issue tree structure
-  html += `<div class="tree-container">`;
-  html += `<div class="tree-root">Problem: ${blueprint.title}</div>`;
-  
-  if (blueprint.supportingPoints?.length > 0) {
-    html += `<div class="tree-branches">`;
-    blueprint.supportingPoints.forEach((point: string, index: number) => {
-      html += `<div class="tree-branch">`;
-      html += `<div class="branch-label">${String.fromCharCode(65 + index)}. ${point}</div>`;
-      html += `</div>`;
-    });
-    html += `</div>`;
-  }
-  
-  html += `</div></div>`;
+  html += `</div>`;
   return html;
 }
 
 function render2x2Matrix(blueprint: any, isPresentation: boolean): string {
-  let html = `<div class="slide-container matrix-2x2">`;
-  
-  html += `<div class="slide-header">`;
-  html += `<h1 class="slide-title">${blueprint.title}</h1>`;
-  html += `</div>`;
-  
-  if (blueprint.keyMessage) {
-    html += `<div class="key-message-box">${blueprint.keyMessage}</div>`;
-  }
-  
-  html += `<div class="matrix-grid">`;
-  html += `<div class="matrix-quadrant q1">High Growth / High Share</div>`;
-  html += `<div class="matrix-quadrant q2">High Growth / Low Share</div>`;
-  html += `<div class="matrix-quadrant q3">Low Growth / High Share</div>`;
-  html += `<div class="matrix-quadrant q4">Low Growth / Low Share</div>`;
-  html += `</div>`;
-  
-  html += `</div>`;
-  return html;
+  return `<div class="slide-container matrix-2x2"><h1>${blueprint.title}</h1></div>`;
 }
 
 function renderWaterfall(blueprint: any, isPresentation: boolean): string {
-  let html = `<div class="slide-container waterfall">`;
-  
-  html += `<div class="slide-header">`;
-  html += `<h1 class="slide-title">${blueprint.title}</h1>`;
-  html += `</div>`;
-  
-  if (blueprint.keyMessage) {
-    html += `<div class="key-message-box">${blueprint.keyMessage}</div>`;
-  }
-  
-  html += `<div class="waterfall-chart">`;
-  html += `<div class="waterfall-bars">`;
-  if (blueprint.dataHighlights?.length > 0) {
-    blueprint.dataHighlights.forEach((item: any, index: number) => {
-      const isPositive = !item.metric.includes('-') && !item.context.toLowerCase().includes('decrease');
-      html += `<div class="waterfall-bar ${isPositive ? 'positive' : 'negative'}">`;
-      html += `<span class="bar-label">${item.metric}</span>`;
-      html += `<span class="bar-context">${item.context}</span>`;
-      html += `</div>`;
-    });
-  }
-  html += `</div></div>`;
-  
-  html += `</div>`;
-  return html;
+  return `<div class="slide-container waterfall"><h1>${blueprint.title}</h1></div>`;
 }
 
 function renderComparison(blueprint: any, isPresentation: boolean): string {
-  let html = `<div class="slide-container comparison">`;
-  
-  html += `<div class="slide-header">`;
-  html += `<h1 class="slide-title">${blueprint.title}</h1>`;
-  html += `</div>`;
-  
-  if (blueprint.keyMessage) {
-    html += `<div class="key-message-box">${blueprint.keyMessage}</div>`;
-  }
-  
-  html += `<div class="comparison-table">`;
-  html += `<div class="comparison-row header">`;
-  html += `<div class="comparison-cell">Criteria</div>`;
-  html += `<div class="comparison-cell">Option A</div>`;
-  html += `<div class="comparison-cell">Option B</div>`;
-  html += `</div>`;
-  
-  if (blueprint.supportingPoints?.length > 0) {
-    blueprint.supportingPoints.forEach((point: string) => {
-      html += `<div class="comparison-row">`;
-      html += `<div class="comparison-cell">${point}</div>`;
-      html += `<div class="comparison-cell">✓</div>`;
-      html += `<div class="comparison-cell">—</div>`;
-      html += `</div>`;
-    });
-  }
-  
-  html += `</div></div>`;
-  return html;
+  return `<div class="slide-container comparison"><h1>${blueprint.title}</h1></div>`;
 }
 
 function renderProcessFlow(blueprint: any, isPresentation: boolean): string {
-  let html = `<div class="slide-container process-flow">`;
-  
-  html += `<div class="slide-header">`;
-  html += `<h1 class="slide-title">${blueprint.title}</h1>`;
-  html += `</div>`;
-  
-  if (blueprint.keyMessage) {
-    html += `<div class="key-message-box">${blueprint.keyMessage}</div>`;
-  }
-  
-  html += `<div class="process-steps">`;
-  if (blueprint.supportingPoints?.length > 0) {
-    blueprint.supportingPoints.forEach((point: string, index: number) => {
-      html += `<div class="process-step">`;
-      html += `<div class="step-number">${index + 1}</div>`;
-      html += `<div class="step-content">${point}</div>`;
-      html += `</div>`;
-    });
-  }
-  html += `</div></div>`;
-  return html;
+  return `<div class="slide-container process-flow"><h1>${blueprint.title}</h1></div>`;
 }
