@@ -53,7 +53,7 @@ serve(async (req) => {
           body: JSON.stringify({
             model: 'text-embedding-3-large',  // Use large model for better quality
             input: query,
-            dimensions: 1536
+            dimensions: 3072
           })
         });
 
