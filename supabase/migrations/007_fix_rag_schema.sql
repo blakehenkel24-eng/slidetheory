@@ -41,9 +41,11 @@ CREATE POLICY "Service role can view all slides"
     ON public.slide_library FOR SELECT
     USING (auth.role() = 'service_role');
 
--- Function to search internal reference slides (AI-only, not user-facing)
+-- Update search_internal_slides to use 3072 dimensions (for text-embedding-3-large)
+DROP FUNCTION IF EXISTS public.search_internal_slides;
+
 CREATE OR REPLACE FUNCTION public.search_internal_slides(
-    query_embedding VECTOR(1536),
+    query_embedding VECTOR(3072),
     match_threshold FLOAT DEFAULT 0.5,
     match_count INTEGER DEFAULT 5,
     filter_industry TEXT DEFAULT NULL,
@@ -76,20 +78,70 @@ BEGIN
         1 - (sl.embedding <=> query_embedding) AS similarity
     FROM public.slide_library sl
     WHERE 
-        -- Only internal_reference slides
         sl.source = 'internal_reference'
-        -- Only system access level (AI-only)
         AND sl.access_level = 'system'
-        -- Similarity threshold
         AND 1 - (sl.embedding <=> query_embedding) > match_threshold
-        -- Optional industry filter
         AND (filter_industry IS NULL OR sl.industry = filter_industry)
-        -- Optional slide type filter
         AND (filter_slide_type IS NULL OR sl.slide_type = filter_slide_type)
     ORDER BY sl.embedding <=> query_embedding
     LIMIT match_count;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Also update search_similar_slides to use 3072 dimensions
+DROP FUNCTION IF EXISTS public.search_similar_slides;
+
+CREATE OR REPLACE FUNCTION public.search_similar_slides(
+    query_embedding VECTOR(3072),
+    match_threshold FLOAT DEFAULT 0.7,
+    match_count INTEGER DEFAULT 5,
+    filter_user_id UUID DEFAULT NULL,
+    filter_industry TEXT DEFAULT NULL,
+    filter_slide_type TEXT DEFAULT NULL
+)
+RETURNS TABLE (
+    id UUID,
+    user_id UUID,
+    title TEXT,
+    industry TEXT,
+    slide_type TEXT,
+    layout_pattern JSONB,
+    color_palette JSONB,
+    tags TEXT[],
+    source TEXT,
+    file_url TEXT,
+    preview_url TEXT,
+    content JSONB,
+    similarity FLOAT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        sl.id,
+        sl.user_id,
+        sl.title,
+        sl.industry,
+        sl.slide_type,
+        sl.layout_pattern,
+        sl.color_palette,
+        sl.tags,
+        sl.source,
+        sl.file_url,
+        sl.preview_url,
+        sl.content,
+        1 - (sl.embedding <=> query_embedding) AS similarity
+    FROM public.slide_library sl
+    WHERE 
+        1 - (sl.embedding <=> query_embedding) > match_threshold
+        AND (filter_user_id IS NULL OR sl.user_id = filter_user_id OR sl.user_id IS NULL)
+        AND (filter_industry IS NULL OR sl.industry = filter_industry)
+        AND (filter_slide_type IS NULL OR sl.slide_type = filter_slide_type)
+    ORDER BY sl.embedding <=> query_embedding
+    LIMIT match_count;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+COMMENT ON FUNCTION public.search_internal_slides IS 'Search internal reference slides for AI RAG retrieval. Uses 3072-dimensional embeddings (text-embedding-3-large).';
 
 -- Function to get random internal reference examples (for diversity)
 CREATE OR REPLACE FUNCTION public.get_internal_reference_examples(
